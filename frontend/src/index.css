@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Outfit:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-dark-bg: #0A0A0F;
+  --color-dark-secondary: #11151A;
+  --color-dark-glass: rgba(20, 25, 35, 0.7);
+  
+  --color-light-bg: #F8F9FA;
+  --color-light-secondary: #FFFFFF;
+  --color-light-glass: rgba(255, 255, 255, 0.8);
+  
+  --color-amber-primary: #F5A623;
+  --color-amber-secondary: #F5C518;
+  
+  --color-success: #10B981;
+  --color-warning: #F97316;
+  --color-critical: #EF4444;
+  
+  --color-risk-low: #22C55E;
+  --color-risk-medium: #F97316;
+  --color-risk-high: #EF4444;
+
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-card-sm: 12px;
+  --radius-card-lg: 16px;
+  --radius-btn: 8px;
+  --radius-modal: 20px;
+}
+
+@layer base {
+  body {
+    @apply font-sans antialiased transition-colors duration-200 bg-dark-bg text-white;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-dark-glass backdrop-blur-md border border-white/10 shadow-xl;
+  }
+  
+  .glass-card-light {
+    @apply bg-light-glass backdrop-blur-md border border-black/10 shadow-lg;
+  }
+  
+  .btn-amber {
+    @apply bg-amber-primary hover:bg-amber-secondary text-white font-semibold py-2 px-6 rounded-btn transition-all duration-300 hover:scale-[1.02] active:scale-[0.98];
+  }
+  
+  .btn-glass {
+    @apply bg-white/5 hover:bg-white/10 border border-white/20 text-white font-semibold py-2 px-6 rounded-btn transition-all duration-300 backdrop-blur-sm;
+  }
+}
+
+.dark {
+  background-color: var(--color-dark-bg);
+  color: white;
+}
+
+.light {
+  background-color: var(--color-light-bg);
+  color: var(--color-dark-bg);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A0A0F;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2D2D3D;
+  border-radius: 10px;
+  border: 2px solid #0A0A0F;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-amber-primary);
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2D2D3D #0A0A0F;
+}
+
