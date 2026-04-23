@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, ShieldAlert, Zap, Droplets, Volume2, Hospital, School, Train, Calculator, UserCheck, MessageSquare, Box } from 'lucide-react';
+import { MapPin, ShieldAlert, Zap, Droplets, Volume2, Hospital, School, Train, Calculator, UserCheck, MessageSquare, Box, ArrowLeft, Heart, Share2, Star, Map, Info } from 'lucide-react';
 import ThreeViewerModal from '../components/ThreeViewerModal';
 
 const HomeDetailPage: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [is3DModalOpen, setIs3DModalOpen] = React.useState(false);
+  const [is3DModalOpen, setIs3DModalOpen] = useState(false);
 
   // Mock data for a single home
   const home = {
@@ -19,8 +19,8 @@ const HomeDetailPage: React.FC = () => {
     riskLevel: 'low',
     type: 'Apartment',
     images: [
-      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80',
+      '/assets/images/hero_villa.png',
+      '/assets/images/apartment.png',
     ],
     beds: 3,
     baths: 2,
@@ -50,208 +50,225 @@ const HomeDetailPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-        <Link to="/explore" className="hover:text-amber-primary">Explore</Link>
-        <span>/</span>
-        <span className="text-white">Property Details</span>
-      </div>
-
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Left Column */}
-        <div className="flex-1 space-y-8">
-          {/* Header */}
-          <div>
-            <div className="flex flex-wrap gap-2 mb-4">
-              <span className="px-3 py-1 bg-amber-primary/10 text-amber-primary rounded-full text-xs font-bold">{home.type}</span>
-              <span className="px-3 py-1 bg-white/5 text-gray-400 rounded-full text-xs">Indiranagar</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-2">{home.title}</h1>
-            <p className="text-gray-400 flex items-center gap-2"><MapPin size={18} /> {home.address}</p>
-          </div>
-
-          {/* Photo Gallery */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-[2rem] overflow-hidden h-[500px]">
-            <div className="relative group overflow-hidden">
-              <img src={home.images[0]} alt="main" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            </div>
-            <div className="grid grid-rows-2 gap-4">
-              <div className="relative group overflow-hidden rounded-[1.5rem]">
-                <img src={home.images[1]} alt="sub1" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-              </div>
-              <div className="relative group cursor-pointer overflow-hidden rounded-[1.5rem]">
-                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80" alt="sub2" className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
-                  <span className="text-2xl font-bold text-white tracking-widest">+5 Photos</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Health Score and Insights */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="glass-card p-8 flex flex-col items-center justify-center text-center">
-              <div className="relative w-32 h-32 flex items-center justify-center mb-4">
-                <svg className="w-full h-full -rotate-90">
-                  <circle cx="64" cy="64" r="58" fill="transparent" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-                  <circle 
-                    cx="64" cy="64" r="58" fill="transparent" stroke="#F5A623" strokeWidth="8" 
-                    strokeDasharray={364.4}
-                    strokeDashoffset={364.4 * (1 - home.healthScore / 100)}
-                    strokeLinecap="round"
-                    className="transition-all duration-1000 ease-out"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-4xl font-mono font-bold">{home.healthScore}</span>
-                  <span className="text-[10px] text-gray-500 uppercase">Score</span>
-                </div>
-              </div>
-              <h4 className="font-bold text-success">Low Risk</h4>
-              <p className="text-xs text-gray-400 mt-2">Excellent structural condition with minor warnings.</p>
-            </div>
-
-            <div className="md:col-span-2 glass-card p-6">
-              <h3 className="text-xl font-bold mb-4">Score Breakdown</h3>
-              <div className="space-y-4">
-                {[
-                  { label: 'Structure Condition', value: 90, color: 'bg-success' },
-                  { label: 'Past Issues History', value: 85, color: 'bg-success' },
-                  { label: 'Area Quality', value: 75, color: 'bg-amber-primary' },
-                  { label: 'Maintenance History', value: 80, color: 'bg-success' },
-                ].map((item, i) => (
-                  <div key={i}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>{item.label}</span>
-                      <span className="font-mono">{item.value}%</span>
-                    </div>
-                    <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${item.value}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1, delay: i * 0.1 }}
-                        className={`h-full ${item.color}`}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Hidden Problems */}
-          <div className="glass-card p-6 border-l-4 border-amber-primary">
-            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <ShieldAlert className="text-amber-primary" /> AI-Detected Hidden Issues
-            </h3>
-            <div className="space-y-4">
-              {home.hiddenIssues.map((issue, i) => (
-                <div key={i} className="bg-white/5 p-4 rounded-lg">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-bold">{issue.issue}</span>
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                      issue.severity === 'critical' ? 'bg-critical/20 text-critical' : 'bg-warning/20 text-warning'
-                    }`}>
-                      {issue.severity}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-400">{issue.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* True Cost Breakdown */}
-          <div className="glass-card p-6 bg-amber-primary/5">
-            <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <Calculator className="text-amber-primary" /> True Cost Breakdown
-            </h3>
-            <div className="space-y-3 mb-6">
-              {[
-                { label: 'Monthly Rent', value: home.trueCost.rent },
-                { label: 'Maintenance Fee', value: home.trueCost.maintenance },
-                { label: 'Estimated Utilities', value: home.trueCost.utilities },
-                { label: 'Repairs Buffer', value: home.trueCost.repairs },
-                { label: 'Society Charges', value: home.trueCost.societyCharges },
-              ].map((item, i) => (
-                <div key={i} className="flex justify-between text-gray-400">
-                  <span>{item.label}</span>
-                  <span className="font-mono">₹{item.value.toLocaleString()}</span>
-                </div>
-              ))}
-              <div className="border-t border-white/10 pt-3 flex justify-between font-bold text-xl">
-                <span>Total Monthly Cost</span>
-                <span className="text-amber-primary font-mono">₹{home.trueCost.total.toLocaleString()}</span>
-              </div>
-            </div>
-            <p className="text-xs text-gray-500 italic">*Real-world estimates based on community data and area trends.</p>
+    <div className="bg-dark-bg min-h-screen pt-24 pb-20 px-6 lg:px-12 text-white/90">
+      <div className="max-w-[1600px] mx-auto">
+        
+        {/* Navigation & Actions */}
+        <div className="flex justify-between items-center mb-8">
+          <button 
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-white/40 hover:text-amber-primary transition-colors font-bold uppercase tracking-widest text-xs"
+          >
+            <ArrowLeft size={16} /> Back to Search
+          </button>
+          <div className="flex gap-4">
+            <button className="p-3 rounded-xl glass-panel hover:text-critical transition-colors">
+              <Heart size={20} />
+            </button>
+            <button className="p-3 rounded-xl glass-panel hover:text-amber-primary transition-colors">
+              <Share2 size={20} />
+            </button>
           </div>
         </div>
 
-        {/* Right Column */}
-        <div className="w-full lg:w-[400px] space-y-6">
-          {/* Action Card */}
-          <div className="glass-card p-6 sticky top-24">
-            <div className="flex justify-between items-end mb-6">
-              <div>
-                <p className="text-sm text-gray-400 uppercase font-bold tracking-wider">Monthly Rent</p>
-                <h2 className="text-3xl font-mono font-bold text-amber-primary">₹{home.rent.toLocaleString()}</h2>
+        <div className="flex flex-col lg:flex-row gap-12">
+          {/* Main Content */}
+          <div className="flex-1 space-y-12">
+            
+            {/* Header */}
+            <section>
+              <div className="flex items-center gap-3 mb-6">
+                <span className="px-3 py-1 bg-amber-primary/10 border border-amber-primary/30 text-amber-primary rounded-full text-[10px] font-black uppercase tracking-widest">
+                  {home.type}
+                </span>
+                <span className="px-3 py-1 bg-white/5 border border-white/10 text-white/40 rounded-full text-[10px] font-black uppercase tracking-widest">
+                  Satellite, Ahmedabad
+                </span>
               </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-400">Security Deposit</p>
-                <p className="font-bold">₹1.5L</p>
-              </div>
-            </div>
+              <h1 className="text-5xl lg:text-6xl font-serif font-bold mb-4 leading-tight">{home.title}</h1>
+              <p className="text-white/40 text-lg flex items-center gap-2"><MapPin size={20} className="text-amber-primary" /> {home.address}</p>
+            </section>
 
-            <div className="space-y-3">
-              <button 
-                onClick={() => setIs3DModalOpen(true)}
-                className="w-full py-4 text-lg flex items-center justify-center gap-2 bg-gradient-to-r from-amber-primary to-amber-500 text-black font-bold rounded-xl hover:scale-[1.02] transition-transform shadow-[0_0_20px_rgba(245,166,35,0.3)]"
-              >
-                <Box size={20} /> View Interactive 3D Tour
-              </button>
-              <button
-                onClick={() => navigate('/map?id=1&lat=23.0225&lng=72.5714')}
-                className="btn-glass w-full py-3 flex items-center justify-center gap-2 text-sm border border-green-500/30 hover:border-green-500"
-              >
-                <MapPin size={16} className="text-green-400" /> See Location on Google Maps
-              </button>
-              <button className="btn-amber w-full py-4 text-lg mt-2">Book Full Inspection</button>
-              <button className="btn-glass w-full py-4">Save Property</button>
-            </div>
+            {/* Gallery */}
+            <section className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[600px]">
+              <div className="md:col-span-8 rounded-card-lg overflow-hidden group relative">
+                <img src={home.images[0]} alt="Main" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
+                <div className="absolute inset-0 bg-gradient-to-t from-dark-bg/60 to-transparent"></div>
+              </div>
+              <div className="md:col-span-4 grid grid-rows-2 gap-6">
+                <div className="rounded-card-lg overflow-hidden group relative">
+                  <img src={home.images[1]} alt="Sub" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-dark-bg/60 to-transparent"></div>
+                </div>
+                <div className="rounded-card-lg overflow-hidden group relative cursor-pointer">
+                  <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80" alt="More" className="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-1000" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-dark-bg/40">
+                    <span className="text-3xl font-bold">+5</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Photos</span>
+                  </div>
+                </div>
+              </div>
+            </section>
 
-            <div className="mt-8 pt-8 border-t border-white/10 space-y-4">
-              <h4 className="font-bold flex items-center gap-2"><MapPin size={16} /> Area Connectivity</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Hospital size={14} className="text-success" /> Hospital: {home.areaInsights.nearestHospital}
+            {/* AI Health Report */}
+            <section className="glass-panel p-10 rounded-card-lg overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-amber-primary/5 blur-[80px] pointer-events-none"></div>
+              <div className="relative z-10">
+                <div className="flex justify-between items-center mb-12">
+                  <h3 className="text-2xl font-serif font-bold flex items-center gap-3">
+                    <ShieldAlert className="text-amber-primary" /> AI Verification Report
+                  </h3>
+                  <div className="text-right">
+                    <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mb-1">Status</p>
+                    <p className="text-success font-bold flex items-center gap-2"><Star size={14} fill="currentColor" /> Verified Safe</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <School size={14} className="text-blue-400" /> School: {home.areaInsights.nearestSchool}
+
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+                  <div className="md:col-span-4 flex flex-col items-center justify-center py-6 border-r border-white/5">
+                    <div className="relative w-40 h-40 flex items-center justify-center mb-6">
+                      <svg className="w-full h-full -rotate-90">
+                        <circle cx="80" cy="80" r="74" fill="transparent" stroke="rgba(255,255,255,0.05)" strokeWidth="10" />
+                        <circle 
+                          cx="80" cy="80" r="74" fill="transparent" stroke="url(#amber-grad)" strokeWidth="10" 
+                          strokeDasharray={464.7}
+                          strokeDashoffset={464.7 * (1 - home.healthScore / 100)}
+                          strokeLinecap="round"
+                          className="transition-all duration-1000"
+                        />
+                        <defs>
+                          <linearGradient id="amber-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#F2C36B" />
+                            <stop offset="100%" stopColor="#D4A853" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-5xl font-mono font-bold">{home.healthScore}</span>
+                        <span className="text-[10px] text-white/30 uppercase font-black tracking-widest">Score</span>
+                      </div>
+                    </div>
+                    <p className="text-white/60 text-center text-sm leading-relaxed max-w-[180px]">Excellent structural condition with minimal maintenance risks.</p>
+                  </div>
+
+                  <div className="md:col-span-8 space-y-8 py-6">
+                    {[
+                      { label: 'Structural Integrity', value: 92, color: 'bg-success' },
+                      { label: 'Legal & Compliance', value: 100, color: 'bg-success' },
+                      { label: 'Infrastructure & Utilities', value: 78, color: 'bg-amber-primary' },
+                      { label: 'Community Rating', value: 85, color: 'bg-success' },
+                    ].map((item, i) => (
+                      <div key={i}>
+                        <div className="flex justify-between text-xs font-bold uppercase tracking-widest mb-3">
+                          <span className="text-white/50">{item.label}</span>
+                          <span className="text-white">{item.value}%</span>
+                        </div>
+                        <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${item.value}%` }}
+                            transition={{ duration: 1, delay: i * 0.1 }}
+                            className={`h-full ${item.color}`}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Train size={14} className="text-amber-primary" /> Metro: {home.areaInsights.nearestMetro}
+              </div>
+            </section>
+
+            {/* True Cost Calculator */}
+            <section className="glass-panel p-10 rounded-card-lg bg-amber-primary/[0.02]">
+              <div className="flex items-center gap-3 mb-10">
+                <Calculator className="text-amber-primary" />
+                <h3 className="text-2xl font-serif font-bold">The "True Cost" Analysis</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                <div className="space-y-5">
+                  {[
+                    { label: 'Base Monthly Rent', value: home.trueCost.rent },
+                    { label: 'Mandatory Maintenance', value: home.trueCost.maintenance },
+                    { label: 'Avg. Utility Bills (Water/Power)', value: home.trueCost.utilities },
+                    { label: 'Annual Repairs (Amortized)', value: home.trueCost.repairs },
+                    { label: 'Society Membership Fees', value: home.trueCost.societyCharges },
+                  ].map((item, i) => (
+                    <div key={i} className="flex justify-between items-center text-sm">
+                      <span className="text-white/40">{item.label}</span>
+                      <span className="font-mono font-bold">₹{item.value.toLocaleString()}</span>
+                    </div>
+                  ))}
+                  <div className="pt-6 border-t border-white/5 flex justify-between items-end">
+                    <div>
+                      <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mb-1">Total Effective Rent</p>
+                      <p className="text-4xl font-mono font-bold text-amber-primary">₹{home.trueCost.total.toLocaleString()}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mb-1">Deposit</p>
+                      <p className="text-xl font-bold">₹1.50L</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <UserCheck size={14} className="text-purple-400" /> Security: 24/7
+                <div className="flex flex-col justify-center p-8 bg-white/5 rounded-2xl border border-white/5">
+                  <h4 className="font-bold mb-4 flex items-center gap-2"><Info size={16} className="text-amber-primary" /> Pro Insight</h4>
+                  <p className="text-sm text-white/50 leading-relaxed italic">"While the base rent is attractive, society charges and utilities add 24% to your monthly outflow. We've verified that water bills are unusually high in this specific building due to private tanker reliance."</p>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Sidebar Actions */}
+          <aside className="w-full lg:w-[400px] space-y-8">
+            <div className="glass-panel p-8 rounded-card-lg sticky top-32 border-white/10 shadow-premium">
+              <div className="mb-10">
+                <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mb-2">Exclusive Offer</p>
+                <div className="flex items-end gap-3">
+                  <h2 className="text-4xl font-mono font-bold text-white">₹{home.rent.toLocaleString()}</h2>
+                  <span className="text-white/30 text-sm mb-2">/month</span>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <button 
+                  onClick={() => setIs3DModalOpen(true)}
+                  className="w-full py-5 glass-panel rounded-xl flex items-center justify-center gap-3 font-bold hover:bg-amber-primary/5 hover:border-amber-primary/50 transition-all text-amber-primary"
+                >
+                  <Box size={20} /> Launch 3D Walkthrough
+                </button>
+                <button 
+                  onClick={() => navigate(`/map?id=1&lat=23.0225&lng=72.5714`)}
+                  className="w-full py-5 glass-panel rounded-xl flex items-center justify-center gap-3 font-bold hover:bg-white/5 transition-all text-white/60"
+                >
+                  <Map size={20} className="text-success" /> Explore Surroundings
+                </button>
+                <div className="h-px bg-white/5 my-6"></div>
+                <button className="btn-amber w-full py-5 text-lg">Initialize Lease</button>
+                <button className="w-full py-4 text-sm font-bold text-white/40 hover:text-white transition-colors">Request Inspection</button>
+              </div>
+
+              <div className="mt-10 pt-8 border-t border-white/5">
+                <h4 className="text-xs font-black uppercase tracking-widest text-white/30 mb-6">Area Intelligence</h4>
+                <div className="grid grid-cols-2 gap-y-6 gap-x-8">
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-white/20 font-black uppercase tracking-tighter">Hospital</p>
+                    <p className="text-sm font-bold flex items-center gap-2"><Hospital size={14} className="text-amber-primary" /> {home.areaInsights.nearestHospital}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-white/20 font-black uppercase tracking-tighter">Education</p>
+                    <p className="text-sm font-bold flex items-center gap-2"><School size={14} className="text-blue-400" /> {home.areaInsights.nearestSchool}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-white/20 font-black uppercase tracking-tighter">Transit</p>
+                    <p className="text-sm font-bold flex items-center gap-2"><Train size={14} className="text-success" /> {home.areaInsights.nearestMetro}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-white/20 font-black uppercase tracking-tighter">Noise</p>
+                    <p className="text-sm font-bold flex items-center gap-2"><Volume2 size={14} className="text-warning" /> {home.areaInsights.noiseLevel}</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          
-          {/* Book a Service Panel */}
-          <div className="glass-card p-6">
-            <h4 className="font-bold mb-4">Book a Service for this Home</h4>
-            <select className="w-full bg-white/5 border border-white/10 rounded-lg p-3 mb-4 outline-none">
-              <option>Deep Cleaning</option>
-              <option>Pest Control</option>
-              <option>Home Inspection</option>
-              <option>Interior Consultation</option>
-            </select>
-            <button className="w-full py-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors text-sm">Book Now</button>
-          </div>
+          </aside>
         </div>
       </div>
 

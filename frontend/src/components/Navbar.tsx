@@ -1,90 +1,167 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../store';
 import { toggleTheme } from '../store/slices/themeSlice';
-import { Sun, Moon, Menu, X, User, LogOut } from 'lucide-react';
+import { Sun, Moon, Menu, X, LogOut, ChevronDown } from 'lucide-react';
 import { logout } from '../store/slices/authSlice';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const dispatch = useDispatch();
+  const location = useLocation();
   const { mode } = useSelector((state: RootState) => state.theme);
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navLinks = [
+    { name: 'Explore', path: '/explore' },
+    { name: 'Map', path: '/map' },
+    { name: '3D Tours', path: '/virtual-tours' },
+    { name: 'Services', path: '/services' },
+    { name: 'Schemes', path: '/schemes' }
+  ];
+
+  if (isAuthenticated) {
+    navLinks.push({ name: 'Dashboard', path: '/dashboard' });
+  }
+
   return (
-    <nav className="fixed w-full z-50 transition-all duration-300 glass-card dark:glass-card light:glass-card-light px-4 py-3">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <Link to="/" className="flex items-center space-x-2">
-          <span className="text-2xl font-serif font-bold text-amber-primary">HomeTruth AI</span>
+    <nav className={`fixed w-full z-[100] transition-all duration-500 ${
+      scrolled 
+        ? 'py-3 bg-dark-bg/60 backdrop-blur-2xl border-b border-white/5 shadow-premium' 
+        : 'py-6 bg-transparent'
+    }`}>
+      <div className="max-w-[1600px] mx-auto px-6 flex justify-between items-center">
+        <Link to="/" className="flex items-center space-x-2 group">
+          <div className="w-10 h-10 bg-gradient-to-tr from-amber-primary to-amber-secondary rounded-xl flex items-center justify-center shadow-amber-glow group-hover:rotate-12 transition-transform duration-500">
+            <span className="text-dark-bg font-serif font-black text-xl">H</span>
+          </div>
+          <span className="text-2xl font-serif font-bold text-white tracking-tight">
+            Home<span className="text-gradient">Truth</span>
+          </span>
         </Link>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex items-center space-x-8">
-          <Link to="/explore" className="hover:text-amber-primary transition-colors">Explore</Link>
-          <Link to="/map" className="hover:text-amber-primary transition-colors">Map</Link>
-          <Link to="/virtual-tours" className="hover:text-amber-primary transition-colors">3D Tours</Link>
-          <Link to="/services" className="hover:text-amber-primary transition-colors">Services</Link>
-          <Link to="/schemes" className="hover:text-amber-primary transition-colors">Schemes</Link>
-          {isAuthenticated && (
-            <Link to="/dashboard" className="hover:text-amber-primary transition-colors">Dashboard</Link>
-          )}
+        <div className="hidden lg:flex items-center space-x-1 glass-panel px-2 py-1.5 rounded-full border-white/5">
+          {navLinks.map((link) => {
+            const isActive = location.pathname === link.path;
+            return (
+              <Link 
+                key={link.name}
+                to={link.path} 
+                className={`relative px-5 py-2 rounded-full text-sm font-bold transition-all duration-300
+                  ${isActive 
+                    ? 'text-dark-bg bg-amber-primary shadow-amber-glow' 
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                  }`}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
         </div>
 
-        <div className="hidden md:flex items-center space-x-4">
+        <div className="hidden lg:flex items-center space-x-6">
           <button
             onClick={() => dispatch(toggleTheme())}
-            className="p-2 rounded-full hover:bg-white/10 transition-colors"
+            className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:text-amber-primary hover:border-amber-primary/30 hover:bg-amber-primary/5 transition-all duration-300"
           >
             {mode === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
           </button>
 
           {isAuthenticated ? (
-            <div className="flex items-center space-x-4">
-              <Link to="/profile" className="flex items-center space-x-2 p-1 rounded-full border border-white/20">
-                <img src={user?.avatar || 'https://via.placeholder.com/32'} alt="avatar" className="w-8 h-8 rounded-full" />
-              </Link>
-              <button onClick={() => dispatch(logout())} className="hover:text-critical transition-colors">
-                <LogOut size={20} />
+            <div className="relative group">
+              <button className="flex items-center space-x-3 bg-white/5 pl-2 pr-4 py-1.5 rounded-full border border-white/10 hover:border-amber-primary/30 transition-all duration-300">
+                <img src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`} alt="avatar" className="w-8 h-8 rounded-full border border-amber-primary/30" />
+                <div className="text-left">
+                  <p className="text-xs font-bold text-white/90 leading-none">{user?.name?.split(' ')[0]}</p>
+                  <p className="text-[10px] text-white/40 font-mono">Premium</p>
+                </div>
+                <ChevronDown size={14} className="text-white/40 group-hover:text-amber-primary transition-colors" />
               </button>
+              
+              <div className="absolute top-full right-0 mt-3 w-48 py-2 glass-panel rounded-2xl opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 border-white/10">
+                <button 
+                  onClick={() => dispatch(logout())} 
+                  className="w-full flex items-center px-4 py-3 text-sm text-red-400 hover:bg-red-400/10 transition-colors"
+                >
+                  <LogOut size={16} className="mr-3" /> Sign Out
+                </button>
+              </div>
             </div>
           ) : (
-            <Link to="/login" className="btn-amber px-4 py-1.5 text-sm">Login</Link>
+            <Link to="/login" className="btn-amber !py-2.5 !px-7 text-sm">
+              Sign In
+            </Link>
           )}
         </div>
 
         {/* Mobile Menu Toggle */}
-        <div className="md:hidden flex items-center space-x-4">
-          <button
-            onClick={() => dispatch(toggleTheme())}
-            className="p-2 rounded-full hover:bg-white/10 transition-colors"
+        <div className="lg:hidden flex items-center space-x-4">
+          <button 
+            onClick={() => setIsMenuOpen(!isMenuOpen)} 
+            className="p-2 text-white bg-white/5 rounded-xl border border-white/10 transition-colors"
           >
-            {mode === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2">
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
       {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden mt-4 pb-4 space-y-4 flex flex-col items-center animate-fade-in">
-          <Link to="/explore" className="text-lg" onClick={() => setIsMenuOpen(false)}>Explore</Link>
-          <Link to="/map" className="text-lg" onClick={() => setIsMenuOpen(false)}>Map</Link>
-          <Link to="/virtual-tours" className="text-lg" onClick={() => setIsMenuOpen(false)}>3D Tours</Link>
-          <Link to="/services" className="text-lg" onClick={() => setIsMenuOpen(false)}>Services</Link>
-          <Link to="/schemes" className="text-lg" onClick={() => setIsMenuOpen(false)}>Schemes</Link>
-          {isAuthenticated ? (
-            <>
-              <Link to="/dashboard" className="text-lg" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
-              <button onClick={() => dispatch(logout())} className="text-lg text-critical">Logout</button>
-            </>
-          ) : (
-            <Link to="/login" className="btn-amber w-full text-center" onClick={() => setIsMenuOpen(false)}>Login</Link>
-          )}
-        </div>
-      )}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="lg:hidden absolute w-full glass-panel border-b border-white/10 overflow-hidden"
+          >
+            <div className="flex flex-col px-6 py-8 space-y-3">
+              {navLinks.map((link) => (
+                <Link 
+                  key={link.name}
+                  to={link.path} 
+                  className={`px-6 py-4 rounded-2xl text-lg font-bold transition-all ${
+                    location.pathname === link.path 
+                      ? 'bg-amber-primary text-dark-bg' 
+                      : 'text-white/60 hover:bg-white/5 hover:text-white'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              ))}
+              <div className="h-px w-full bg-white/5 my-4"></div>
+              {isAuthenticated ? (
+                <button 
+                  onClick={() => { dispatch(logout()); setIsMenuOpen(false); }} 
+                  className="flex items-center px-6 py-4 rounded-2xl text-lg font-bold text-red-400 hover:bg-red-400/10 transition-colors"
+                >
+                  <LogOut size={20} className="mr-4" /> Sign Out
+                </button>
+              ) : (
+                <Link 
+                  to="/login" 
+                  className="btn-amber text-center py-4 text-lg"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };
