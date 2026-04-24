@@ -11,48 +11,10 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 import ThreeViewerModal from '../components/ThreeViewerModal';
 
-interface NearbyPlace {
-  name: string;
-  distance: string;
-}
-
-interface Property {
-  _id: string;
-  title: string;
-  propertyType?: string;
-  type?: string;
-  listingType: 'buy' | 'rent';
-  address: string;
-  city?: string;
-  state?: string;
-  price?: number;
-  rent?: number;
-  bedrooms?: number;
-  beds?: number;
-  bathrooms?: number;
-  baths?: number;
-  area?: number;
-  furnishing?: string;
-  ownerName?: string;
-  phone?: string;
-  whatsapp?: string;
-  images?: string[];
-  image?: string;
-  createdAt?: string;
-  healthScore?: number;
-  lat?: number;
-  lng?: number;
-  nearbyPlaces?: {
-    hospitals?: NearbyPlace[];
-    gardens?: NearbyPlace[];
-    temples?: NearbyPlace[];
-  };
-}
-
-const HomeDetailPage: React.FC = () => {
+const HomeDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [property, setProperty] = useState<Property | null>(null);
+  const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [isThreeViewOpen, setIsThreeViewOpen] = useState(false);
@@ -411,8 +373,8 @@ const HomeDetailPage: React.FC = () => {
                 <div className="grid grid-cols-2 gap-3 pt-1">
                   <button
                     onClick={() => {
-                      const lat = property.lat || (property as any).location?.lat;
-                      const lng = property.lng || (property as any).location?.lng;
+                      const lat = property.lat || property.location?.lat;
+                      const lng = property.lng || property.location?.lng;
                       if (lat && lng) {
                         navigate(`/map?lat=${lat}&lng=${lng}&id=${property._id}`);
                       } else {

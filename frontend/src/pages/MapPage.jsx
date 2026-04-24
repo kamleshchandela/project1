@@ -5,19 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Layers, Shield, Zap, Volume2, Navigation, MapPin, List, X } from 'lucide-react';
 import api from '../services/api';
 
-interface MapProperty {
-  id: string;
-  lat: number;
-  lng: number;
-  title: string;
-  address: string;
-  rent: number;
-  score: number;
-  risk: string;
-  beds: number;
-  type: string;
-}
-
 const mockHospitals = [
   // Ahmedabad hospitals
   { id: 'h1', lat: 23.0200, lng: 72.5800, name: 'Apollo Hospital Ahmedabad' },
@@ -42,7 +29,7 @@ const mapContainerStyle = { width: '100%', height: '100%' };
 
 const defaultCenter = { lat: 22.3072, lng: 71.1924 }; // Gujarat center
 
-const mapThemes: Record<string, { label: string; emoji: string; styles: google.maps.MapTypeStyle[] }> = {
+const mapThemes = {
   retro: {
     label: 'Retro', emoji: '🗺️',
     styles: [
@@ -65,7 +52,7 @@ const mapThemes: Record<string, { label: string; emoji: string; styles: google.m
 
 // ==================== CUSTOM MARKERS ====================
 
-const HouseMarker: React.FC<{ home: MapProperty; onClick: () => void }> = ({ home, onClick }) => {
+const HouseMarker = ({ home, onClick }) => {
   const riskColor = home.risk === 'low' ? '#22C55E' : home.risk === 'medium' ? '#F97316' : '#EF4444';
   return (
     <div
@@ -100,7 +87,7 @@ const HouseMarker: React.FC<{ home: MapProperty; onClick: () => void }> = ({ hom
   );
 };
 
-const HospitalMarker: React.FC = () => (
+const HospitalMarker = () => (
   <div style={{ transform: 'translate(-50%, -50%)', cursor: 'default' }}>
     <div style={{
       width: 30, height: 30,
@@ -117,7 +104,7 @@ const HospitalMarker: React.FC = () => (
   </div>
 );
 
-const GardenMarker: React.FC = () => (
+const GardenMarker = () => (
   <div style={{ transform: 'translate(-50%, -50%)', cursor: 'default' }}>
     <div style={{
       width: 28, height: 28,
@@ -133,7 +120,7 @@ const GardenMarker: React.FC = () => (
   </div>
 );
 
-const TempleMarker: React.FC = () => (
+const TempleMarker = () => (
   <div style={{ transform: 'translate(-50%, -50%)', cursor: 'default' }}>
     <div style={{
       width: 28, height: 28,
@@ -151,22 +138,22 @@ const TempleMarker: React.FC = () => (
 
 // ==================== MAIN PAGE ====================
 
-const MapPage: React.FC = () => {
+const MapPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [homes, setHomes] = useState<MapProperty[]>([]);
-  const [selectedHome, setSelectedHome] = useState<MapProperty | null>(null);
-  const [nearbyHospitals, setNearbyHospitals] = useState<{id:string;lat:number;lng:number;name:string}[]>([]);
-  const [nearbyGardens, setNearbyGardens] = useState<{id:string;lat:number;lng:number;name:string}[]>([]);
-  const [nearbyTemples, setNearbyTemples] = useState<{id:string;lat:number;lng:number;name:string}[]>([]);
+  const [homes, setHomes] = useState([]);
+  const [selectedHome, setSelectedHome] = useState(null);
+  const [nearbyHospitals, setNearbyHospitals] = useState([]);
+  const [nearbyGardens, setNearbyGardens] = useState([]);
+  const [nearbyTemples, setNearbyTemples] = useState([]);
 
   // Fetch properties from MongoDB that have lat/lng
   useEffect(() => {
     api.get('/properties').then(res => {
       const raw = res.data?.data?.properties || [];
-      const mapped: MapProperty[] = raw
-        .filter((p: any) => (p.lat && p.lng) || (p.location?.lat && p.location?.lng))
-        .map((p: any) => ({
+      const mapped = raw
+        .filter((p) => (p.lat && p.lng) || (p.location?.lat && p.location?.lng))
+        .map((p) => ({
           id: p._id,
           lat: p.lat || p.location?.lat,
           lng: p.lng || p.location?.lng,
@@ -181,19 +168,19 @@ const MapPage: React.FC = () => {
       setHomes(mapped);
 
       // Collect all nearby places with lat/lng from all properties
-      const hospitals: any[] = [];
-      const gardens: any[] = [];
-      const temples: any[] = [];
-      raw.forEach((p: any) => {
+      const hospitals = [];
+      const gardens = [];
+      const temples = [];
+      raw.forEach((p) => {
         const nearby = p.nearbyPlaces;
         if (!nearby) return;
-        (nearby.hospitals || []).forEach((h: any, i: number) => {
+        (nearby.hospitals || []).forEach((h, i) => {
           if (h.lat && h.lng) hospitals.push({ id: `h-${p._id}-${i}`, lat: h.lat, lng: h.lng, name: h.name });
         });
-        (nearby.gardens || []).forEach((g: any, i: number) => {
+        (nearby.gardens || []).forEach((g, i) => {
           if (g.lat && g.lng) gardens.push({ id: `g-${p._id}-${i}`, lat: g.lat, lng: g.lng, name: g.name });
         });
-        (nearby.temples || []).forEach((t: any, i: number) => {
+        (nearby.temples || []).forEach((t, i) => {
           if (t.lat && t.lng) temples.push({ id: `t-${p._id}-${i}`, lat: t.lat, lng: t.lng, name: t.name });
         });
       });
@@ -208,12 +195,12 @@ const MapPage: React.FC = () => {
   const [showHospitals, setShowHospitals] = useState(true);
   const [showGardens, setShowGardens] = useState(true);
   const [showTemples, setShowTemples] = useState(true);
-  const [activeLayer, setActiveLayer] = useState<string | null>(null);
-  const [mapTheme, setMapTheme] = useState<string>('retro');
+  const [activeLayer, setActiveLayer] = useState(null);
+  const [mapTheme, setMapTheme] = useState('retro');
   const [showThemePicker, setShowThemePicker] = useState(false);
   const [resetKey, setResetKey] = useState(0);
-  const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+  const [map, setMap] = useState(null);
+  const [autocomplete, setAutocomplete] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
@@ -223,7 +210,7 @@ const MapPage: React.FC = () => {
     libraries: ['places'],
   });
 
-  const onAutocompleteLoad = (autocompleteInstance: google.maps.places.Autocomplete) => {
+  const onAutocompleteLoad = (autocompleteInstance) => {
     setAutocomplete(autocompleteInstance);
   };
 
@@ -242,7 +229,7 @@ const MapPage: React.FC = () => {
     home.address.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handlePropertySelect = (home: typeof mockHomes[0]) => {
+  const handlePropertySelect = (home) => {
     setSelectedHome(home);
     map?.panTo({ lat: home.lat, lng: home.lng });
     map?.setZoom(16);
@@ -252,12 +239,11 @@ const MapPage: React.FC = () => {
 
   const resetAllLayers = useCallback(() => {
     setActiveLayer(null);
-    // showHospitals and showGardens are now independent
     setShowLegend(false);
     setResetKey(prev => prev + 1);
   }, []);
 
-  const onLoad = useCallback((mapInstance: google.maps.Map) => {
+  const onLoad = useCallback((mapInstance) => {
     setMap(mapInstance);
   }, []);
 
@@ -281,7 +267,7 @@ const MapPage: React.FC = () => {
       <div className="flex items-center justify-center h-[calc(100vh-80px)] bg-dark-bg text-white">
         <div className="text-center glass-card p-8">
           <p className="text-xl font-bold text-critical mb-2">Map Load Error</p>
-          <p className="text-gray-400">Please add a valid Google Maps API key to `MapPage.tsx`.</p>
+          <p className="text-gray-400">Please add a valid Google Maps API key to `MapPage.jsx`.</p>
         </div>
       </div>
     );

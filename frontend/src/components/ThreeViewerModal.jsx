@@ -3,14 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin } from 'lucide-react';
 import ThreeViewer from './ThreeViewer';
 
-interface ThreeViewerModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title?: string;
-  address?: string;
-}
-
-const ThreeViewerModal: React.FC<ThreeViewerModalProps> = ({ isOpen, onClose, title, address }) => {
+const ThreeViewerModal = ({ isOpen, onClose, title, address }) => {
   return (
     <AnimatePresence>
       {isOpen && (

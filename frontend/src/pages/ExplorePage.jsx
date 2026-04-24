@@ -5,39 +5,19 @@ import { useNavigate } from 'react-router-dom';
 import ThreeViewerModal from '../components/ThreeViewerModal';
 import api from '../services/api';
 
-interface Property {
-  _id: string;
-  title: string;
-  address: string;
-  city?: string;
-  price?: number;
-  rent?: number;
-  healthScore?: number;
-  riskLevel?: string;
-  propertyType?: string;
-  type?: string;
-  images?: string[];
-  image?: string;
-  bedrooms?: number;
-  beds?: number;
-  bathrooms?: number;
-  baths?: number;
-  area?: number;
-}
-
-const ExplorePage: React.FC = () => {
+const ExplorePage = () => {
   const navigate = useNavigate();
-  const [properties, setProperties] = useState<Property[]>([]);
+  const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [search, setSearch] = useState('');
-  const [active3DTour, setActive3DTour] = useState<string | null>(null);
+  const [active3DTour, setActive3DTour] = useState(null);
   
   // Filter States
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [maxPrice, setMaxPrice] = useState<number>(100000);
-  const [bedrooms, setBedrooms] = useState<number>(0);
-  const [riskLevel, setRiskLevel] = useState<string>('any');
+  const [selectedTypes, setSelectedTypes] = useState([]);
+  const [maxPrice, setMaxPrice] = useState(100000);
+  const [bedrooms, setBedrooms] = useState(0);
+  const [riskLevel, setRiskLevel] = useState('any');
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -73,7 +53,7 @@ const ExplorePage: React.FC = () => {
       return matchSearch && matchType && matchPrice && matchBedrooms && matchRiskLevel;
     })
     .sort((a, b) => {
-      return (b.healthScore || 0) - (a.healthScore || 0); // Default sort by score
+      return (b.healthScore || 0) - (a.healthScore || 0); 
     });
 
   return (

@@ -55,16 +55,16 @@ const mockBanks = [
   },
 ];
 
-const LoanOptimizerPage: React.FC = () => {
+const LoanOptimizerPage = () => {
   const navigate = useNavigate();
   const [loanAmount, setLoanAmount] = useState(5000000);
   const [tenure, setTenure] = useState(20);
   const [interestRate, setInterestRate] = useState(8.5);
-  const [showGuide, setShowGuide] = useState<string | null>(null);
+  const [showGuide, setShowGuide] = useState(null);
   const [showEligibilityModal, setShowEligibilityModal] = useState(false);
-  const [eligibilityScore, setEligibilityScore] = useState<number | null>(null);
+  const [eligibilityScore, setEligibilityScore] = useState(null);
 
-  const calculateEMI = (amount: number, rate: number, years: number) => {
+  const calculateEMI = (amount, rate, years) => {
     const monthlyRate = rate / 12 / 100;
     const numMonths = years * 12;
     return Math.round(

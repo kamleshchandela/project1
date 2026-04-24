@@ -3,11 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Hand } from 'lucide-react';
 import splashBg from '../assets/splash_bg.png';
 
-interface SplashScreenProps {
-  onLoadingComplete: () => void;
-}
-
-const SplashScreen: React.FC<SplashScreenProps> = ({ onLoadingComplete }) => {
+const SplashScreen = ({ onLoadingComplete }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onLoadingComplete();

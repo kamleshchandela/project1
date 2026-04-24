@@ -4,29 +4,9 @@ import { Play, Eye, MapPin, Box, ArrowRight, Zap, Sparkles, Search, Loader2 } fr
 import ThreeViewerModal from '../components/ThreeViewerModal';
 import api from '../services/api';
 
-interface Property {
-  _id: string;
-  title: string;
-  address: string;
-  city?: string;
-  price?: number;
-  rent?: number;
-  healthScore?: number;
-  riskLevel?: string;
-  propertyType?: string;
-  type?: string;
-  images?: string[];
-  image?: string;
-  bedrooms?: number;
-  beds?: number;
-  bathrooms?: number;
-  baths?: number;
-  area?: number;
-}
-
-const VirtualToursPage: React.FC = () => {
-  const [activeTour, setActiveTour] = useState<string | null>(null);
-  const [properties, setProperties] = useState<Property[]>([]);
+const VirtualToursPage = () => {
+  const [activeTour, setActiveTour] = useState(null);
+  const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 

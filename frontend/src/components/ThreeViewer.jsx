@@ -18,7 +18,7 @@ function Loader() {
 }
 
 // Model component
-function Model({ url }: { url: string }) {
+function Model({ url }) {
   // useGLTF automatically handles draco compression using a Google CDN decoder
   const { scene, animations } = useGLTF(url);
   const { actions } = useAnimations(animations, scene);
@@ -38,7 +38,7 @@ function Model({ url }: { url: string }) {
 // Preload the model to avoid pop-in
 useGLTF.preload('https://threejs.org/examples/models/gltf/LittlestTokyo.glb');
 
-const ThreeViewer: React.FC = () => {
+const ThreeViewer = () => {
   return (
     <div className="w-full h-full bg-[#e2e0e0] cursor-grab active:cursor-grabbing">
       <Canvas

@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Shield, Map, Box, Settings, ArrowRight, Play, CheckCircle2, Search, Star, Zap, Users, Sparkles, Eye, ShieldCheck } from 'lucide-react';
 
-const LandingPage: React.FC = () => {
-  const statsRef = useRef<HTMLDivElement>(null);
+const LandingPage = () => {
+  const statsRef = useRef(null);
   const [statsAnimated, setStatsAnimated] = useState(false);
   const navigate = useNavigate();
   const { scrollY } = useScroll();
@@ -42,7 +42,7 @@ const LandingPage: React.FC = () => {
     const timer = setInterval(() => {
       frame++;
       const progress = frame / totalFrames;
-      const easeOutExpo = (t: number) => t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+      const easeOutExpo = (t) => t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
       
       setCounts(targets.map((target) => target * easeOutExpo(progress)));
 
@@ -53,7 +53,7 @@ const LandingPage: React.FC = () => {
     }, frameDuration);
   };
 
-  const formatStat = (index: number, val: number) => {
+  const formatStat = (index, val) => {
     if (index === 0) return Math.floor(val).toLocaleString('en-IN') + '+';
     if (index === 1) return Math.floor(val) + '%';
     if (index === 2) return '₹' + val.toFixed(1) + ' Cr';

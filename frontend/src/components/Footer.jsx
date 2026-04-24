@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Globe, Share2, MessageCircle } from 'lucide-react';
 
-const Footer: React.FC = () => {
+const Footer = () => {
   return (
     <footer className="glass-card dark:glass-card light:glass-card-light py-12 px-4 mt-20">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">

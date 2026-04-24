@@ -10,7 +10,7 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-const AddPropertyPage: React.FC = () => {
+const AddPropertyPage = () => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -31,13 +31,13 @@ const AddPropertyPage: React.FC = () => {
     phone: '',
     whatsapp: '',
     email: '',
-    images: [] as string[]
+    images: []
   });
 
   const propertyTypes = ['Apartment', 'House', 'Villa', 'PG', 'Commercial'];
   const furnishingTypes = ['Unfurnished', 'Semi', 'Fully'];
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -89,7 +89,7 @@ const AddPropertyPage: React.FC = () => {
 
   const prevStep = () => setStep(prev => prev - 1);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.images.length < 3) {
       return toast.error('Minimum 3 images required');
@@ -100,7 +100,7 @@ const AddPropertyPage: React.FC = () => {
       await api.post('/properties', formData);
       toast.success('Property Listed Successfully!');
       navigate('/explore');
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.response?.data?.message || 'Submission failed');
     } finally {
       setLoading(false);
@@ -181,7 +181,7 @@ const AddPropertyPage: React.FC = () => {
                 <div className="space-y-2">
                   <label className="text-[10px] text-white/30 font-black uppercase tracking-[0.2em] ml-1">Listing Type</label>
                   <div className="flex p-1.5 bg-white/[0.03] rounded-2xl border border-white/5 w-full lg:w-1/2">
-                    {(['buy', 'rent'] as const).map((type) => (
+                    {['buy', 'rent'].map((type) => (
                       <button
                         key={type}
                         type="button"

@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import type { RootState } from '../store';
 import { toggleTheme } from '../store/slices/themeSlice';
 import { Sun, Moon, Menu, X, LogOut, ChevronDown, User } from 'lucide-react';
 import { logout } from '../store/slices/authSlice';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const Navbar: React.FC = () => {
+const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const dispatch = useDispatch();
   const location = useLocation();
-  const { mode } = useSelector((state: RootState) => state.theme);
-  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+  const { mode } = useSelector((state) => state.theme);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     const handleScroll = () => {

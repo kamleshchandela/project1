@@ -3,10 +3,9 @@ import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useSelector } from 'react-redux';
-import type { RootState } from '../store';
 
-const MainLayout: React.FC = () => {
-  const { mode } = useSelector((state: RootState) => state.theme);
+const MainLayout = () => {
+  const { mode } = useSelector((state) => state.theme);
 
   useEffect(() => {
     if (mode === 'dark') {

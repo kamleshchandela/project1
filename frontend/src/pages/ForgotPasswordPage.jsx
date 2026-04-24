@@ -6,14 +6,14 @@ import emailjs from '@emailjs/browser';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
-const ForgotPasswordPage: React.FC = () => {
+const ForgotPasswordPage = () => {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
 
-  const handleRecoverPassword = async (e: React.FormEvent) => {
+  const handleRecoverPassword = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -48,7 +48,7 @@ Please use this password to log in and then change it in your settings.`,
 
       toast.success('New password sent to your email');
       setStep(2);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Recovery error:', error);
       toast.error(error.response?.data?.message || 'Failed to recover password');
     } finally {
@@ -160,4 +160,3 @@ Please use this password to log in and then change it in your settings.`,
 };
 
 export default ForgotPasswordPage;
-

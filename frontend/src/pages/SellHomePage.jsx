@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Home, MapPin, Ruler, IndianRupee, MessageCircle, ArrowRight, ShieldCheck, Zap, ChevronDown, Link as LinkIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const SellHomePage: React.FC = () => {
+const SellHomePage = () => {
   const [formData, setFormData] = useState({
     propertyType: 'Luxury Villa',
     location: '',
@@ -14,7 +14,7 @@ const SellHomePage: React.FC = () => {
   });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const handleWhatsAppConnect = (e: React.FormEvent) => {
+  const handleWhatsAppConnect = (e) => {
     e.preventDefault();
     const message = `Hello HomeTruth AI! I'm interested in selling my property.
     

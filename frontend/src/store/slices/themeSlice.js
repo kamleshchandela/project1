@@ -1,12 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
 
-interface ThemeState {
-  mode: 'dark' | 'light';
-}
-
-const initialState: ThemeState = {
-  mode: (localStorage.getItem('theme') as 'dark' | 'light') || 'dark',
+const initialState = {
+  mode: localStorage.getItem('theme') || 'dark',
 };
 
 const themeSlice = createSlice({
@@ -24,7 +19,7 @@ const themeSlice = createSlice({
         document.documentElement.classList.remove('dark');
       }
     },
-    setTheme: (state, action: PayloadAction<'dark' | 'light'>) => {
+    setTheme: (state, action) => {
       state.mode = action.payload;
       localStorage.setItem('theme', state.mode);
       if (state.mode === 'dark') {

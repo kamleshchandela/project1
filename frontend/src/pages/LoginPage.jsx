@@ -8,7 +8,7 @@ import { setCredentials } from '../store/slices/authSlice';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -17,7 +17,7 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -26,14 +26,14 @@ const LoginPage: React.FC = () => {
       dispatch(setCredentials({ user: data.user, token }));
       toast.success('Welcome back!');
       navigate('/dashboard');
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse: any) => {
+  const handleGoogleSuccess = async (credentialResponse) => {
     try {
       const response = await api.post('/auth/google-login', { 
         idToken: credentialResponse.credential 
@@ -42,7 +42,7 @@ const LoginPage: React.FC = () => {
       dispatch(setCredentials({ user: data.user, token }));
       toast.success('Logged in with Google');
       navigate('/dashboard');
-    } catch (error: any) {
+    } catch (error) {
       toast.error('Google login failed');
     }
   };
@@ -75,7 +75,7 @@ const LoginPage: React.FC = () => {
         {/* Background Ambience */}
         <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-amber-primary/5 blur-[120px] pointer-events-none"></div>
 
-        <div className="w-full max-w-sm relative z-10">
+        <div className="w-full max-sm relative z-10">
           {/* Logo Section */}
           <motion.div 
             initial={{ opacity: 0, y: -20 }}

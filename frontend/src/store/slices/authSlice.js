@@ -1,14 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
 
-interface AuthState {
-  user: any | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  loading: boolean;
-}
-
-const initialState: AuthState = {
+const initialState = {
   user: JSON.parse(localStorage.getItem('hometruth_user') || 'null'),
   token: localStorage.getItem('hometruth_token'),
   isAuthenticated: !!localStorage.getItem('hometruth_token'),
@@ -19,10 +11,7 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setCredentials: (
-      state,
-      action: PayloadAction<{ user: any; token: string }>
-    ) => {
+    setCredentials: (state, action) => {
       const { user, token } = action.payload;
       state.user = user;
       state.token = token;
@@ -37,7 +26,7 @@ const authSlice = createSlice({
       localStorage.removeItem('hometruth_token');
       localStorage.removeItem('hometruth_user');
     },
-    setLoading: (state, action: PayloadAction<boolean>) => {
+    setLoading: (state, action) => {
       state.loading = action.payload;
     },
   },

@@ -8,8 +8,8 @@ import { setCredentials } from '../store/slices/authSlice';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
-const SignupPage: React.FC = () => {
-  const [role, setRole] = useState<'user' | 'provider'>('user');
+const SignupPage = () => {
+  const [role, setRole] = useState('user');
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -21,14 +21,14 @@ const SignupPage: React.FC = () => {
     jobsCompleted: '',
     baseFee: ''
   });
-  const [avatar, setAvatar] = useState<string | null>(null);
+  const [avatar, setAvatar] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     if (formData.password.length < 6) {
       return toast.error('Password must be at least 6 characters');
@@ -49,14 +49,14 @@ const SignupPage: React.FC = () => {
       dispatch(setCredentials({ user: data.user, token }));
       toast.success(role === 'user' ? 'Welcome to HomeTruth!' : 'Partner application received!');
       navigate('/dashboard');
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.response?.data?.message || 'Signup failed');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse: any) => {
+  const handleGoogleSuccess = async (credentialResponse) => {
     try {
       const response = await api.post('/auth/google-login', { 
         idToken: credentialResponse.credential 
@@ -65,7 +65,7 @@ const SignupPage: React.FC = () => {
       dispatch(setCredentials({ user: data.user, token }));
       toast.success('Signed in with Google');
       navigate('/dashboard');
-    } catch (error: any) {
+    } catch (error) {
       toast.error('Google signup failed');
     }
   };
@@ -162,7 +162,7 @@ const SignupPage: React.FC = () => {
                       if (file) {
                         const reader = new FileReader();
                         reader.onloadend = () => {
-                          setAvatar(reader.result as string);
+                          setAvatar(reader.result);
                         };
                         reader.readAsDataURL(file);
                       }
@@ -218,16 +218,16 @@ const SignupPage: React.FC = () => {
                       required
                     >
                       <option value="" style={{background: '#1A110A', color: '#ffffff80'}}>Select Your Specialization</option>
-                      <option value="all-rounder" style={{background: '#1A110A', color: '#fff'}}>🛠️ All-Rounder (Multi-talented)</option>
-                      <option value="plumber" style={{background: '#1A110A', color: '#fff'}}>🪠 Plumbing</option>
-                      <option value="electrician" style={{background: '#1A110A', color: '#fff'}}>⚡ Electrician</option>
-                      <option value="ac-repair" style={{background: '#1A110A', color: '#fff'}}>❄️ AC Repair</option>
-                      <option value="carpenter" style={{background: '#1A110A', color: '#fff'}}>🪚 Carpenter</option>
-                      <option value="painter" style={{background: '#1A110A', color: '#fff'}}>🎨 Painter</option>
-                      <option value="cleaning" style={{background: '#1A110A', color: '#fff'}}>🧹 Cleaning</option>
-                      <option value="pest-control" style={{background: '#1A110A', color: '#fff'}}>🐜 Pest Control</option>
-                      <option value="home-inspector" style={{background: '#1A110A', color: '#fff'}}>🔍 Home Inspector</option>
-                      <option value="legal" style={{background: '#1A110A', color: '#fff'}}>⚖️ Legal Specialist</option>
+                      <option value="All-Rounder" style={{background: '#1A110A', color: '#fff'}}>🛠️ All-Rounder (Multi-talented)</option>
+                      <option value="Electrician" style={{background: '#1A110A', color: '#fff'}}>⚡ Electrician</option>
+                      <option value="AC Repair" style={{background: '#1A110A', color: '#fff'}}>❄️ AC Repair</option>
+                      <option value="Plumber" style={{background: '#1A110A', color: '#fff'}}>🪠 Plumbing</option>
+                      <option value="Carpenter" style={{background: '#1A110A', color: '#fff'}}>🪚 Carpenter</option>
+                      <option value="Painter" style={{background: '#1A110A', color: '#fff'}}>🎨 Painter</option>
+                      <option value="Cleaning" style={{background: '#1A110A', color: '#fff'}}>🧹 Cleaning</option>
+                      <option value="Pest Control" style={{background: '#1A110A', color: '#fff'}}>🐜 Pest Control</option>
+                      <option value="Home Inspector" style={{background: '#1A110A', color: '#fff'}}>🔍 Home Inspector</option>
+                      <option value="Legal" style={{background: '#1A110A', color: '#fff'}}>⚖️ Legal Specialist</option>
                     </select>
                   </div>
 

@@ -2,11 +2,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Home, Heart, Clock, Settings, Bell, CreditCard, ShieldCheck, User, MapPin, Phone, Mail, TrendingUp, Briefcase, Star, ChevronRight } from 'lucide-react';
 import { useSelector } from 'react-redux';
-import type { RootState } from '../store';
 
-const UserDashboard: React.FC = () => {
+const UserDashboard = () => {
   const [activeTab, setActiveTab] = React.useState('Overview');
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state) => state.auth);
 
   // Dynamic Sidebar based on Role
   const sidebarLinks = user?.role === 'provider' ? [
@@ -386,4 +385,3 @@ const UserDashboard: React.FC = () => {
 };
 
 export default UserDashboard;
-

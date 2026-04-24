@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Zap, Info, ArrowRight, CheckCircle2, AlertCircle, Sparkles, ChevronDown, Coins, Calculator, Clock } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const mockSchemes = [
   {
@@ -172,16 +173,16 @@ const incomeOptions = [
   { id: 'general', label: 'Above ₹18 Lakh' }
 ];
 
-const SchemesPage: React.FC = () => {
+const SchemesPage = () => {
   const [income, setIncome] = useState('');
   const [isIncomeOpen, setIsIncomeOpen] = useState(false);
-  const [isFirstBuyer, setIsFirstBuyer] = useState<boolean | null>(null);
+  const [isFirstBuyer, setIsFirstBuyer] = useState(null);
   const [propertyValue, setPropertyValue] = useState('');
-  const [calculationResult, setCalculationResult] = useState<any | null>(null);
-  const [selectedScheme, setSelectedScheme] = useState<any | null>(null);
+  const [calculationResult, setCalculationResult] = useState(null);
+  const [selectedScheme, setSelectedScheme] = useState(null);
   const [refinementMode, setRefinementMode] = useState(false);
 
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount) => {
     if (amount >= 10000000) return `₹${(amount / 10000000).toFixed(2)} Cr`;
     if (amount >= 100000) return `₹${(amount / 100000).toFixed(2)} Lakh`;
     return `₹${amount.toLocaleString('en-IN')}`;
@@ -448,7 +449,7 @@ const SchemesPage: React.FC = () => {
                         </div>
                         
                         <div className="space-y-4">
-                          {calculationResult.schemes.map((s: any, i: number) => (
+                          {calculationResult.schemes.map((s, i) => (
                             <div key={i} className="flex items-center justify-between p-6 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-all">
                               <div>
                                 <h4 className="text-sm font-bold flex items-center gap-2">
@@ -625,7 +626,7 @@ const SchemesPage: React.FC = () => {
                           <CheckCircle2 size={20} className="text-success" /> Income Eligibility
                         </h4>
                         <div className="grid grid-cols-3 gap-4">
-                          {selectedScheme.guide.incomeEligibility.map((item: any) => (
+                          {selectedScheme.guide.incomeEligibility.map((item) => (
                             <div key={item.level} className="p-6 rounded-2xl bg-white/5 border border-white/5 text-center">
                               <p className="text-[10px] font-black text-amber-primary mb-2 uppercase">{item.level}</p>
                               <p className="text-sm font-bold">{item.limit}</p>
@@ -637,7 +638,7 @@ const SchemesPage: React.FC = () => {
                       <div>
                         <h4 className="text-xl font-bold mb-6">Required Documents</h4>
                         <div className="flex flex-wrap gap-3">
-                          {selectedScheme.guide.documents.map((doc: string) => (
+                          {selectedScheme.guide.documents.map((doc) => (
                             <span key={doc} className="px-5 py-2.5 rounded-full glass-panel border-white/10 text-xs font-bold text-white/60">{doc}</span>
                           ))}
                         </div>
@@ -685,7 +686,7 @@ const SchemesPage: React.FC = () => {
                   {selectedScheme.id === 'stamp-duty' && (
                     <>
                       <div className="grid grid-cols-2 gap-8">
-                        {selectedScheme.guide.states.map((state: any) => (
+                        {selectedScheme.guide.states.map((state) => (
                           <div key={state.name} className="p-8 rounded-3xl bg-white/[0.02] border border-white/5">
                             <h4 className="text-lg font-bold mb-2 text-amber-primary">{state.name}</h4>
                             <p className="text-white/30 text-xs font-mono">{state.portal}</p>
@@ -721,7 +722,7 @@ const SchemesPage: React.FC = () => {
                       <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/5">
                         <h4 className="text-lg font-bold mb-4">Mandatory Requirements</h4>
                         <ul className="list-disc list-inside space-y-2 text-white/40 text-sm">
-                          {selectedScheme.guide.requirements.map((req: string) => (
+                          {selectedScheme.guide.requirements.map((req) => (
                             <li key={req}>{req}</li>
                           ))}
                         </ul>
@@ -739,7 +740,7 @@ const SchemesPage: React.FC = () => {
                       <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/5">
                         <h4 className="text-lg font-bold mb-4 text-amber-primary">Eligible Components</h4>
                         <div className="flex flex-wrap gap-3">
-                          {selectedScheme.guide.components.map((comp: string) => (
+                          {selectedScheme.guide.components.map((comp) => (
                             <span key={comp} className="px-5 py-2.5 rounded-full glass-panel border-white/10 text-xs font-bold text-white/60">{comp}</span>
                           ))}
                         </div>
@@ -795,7 +796,7 @@ const SchemesPage: React.FC = () => {
                       <div className="p-10 rounded-[2.5rem] bg-blue-500/5 border border-blue-500/20">
                         <h4 className="text-xl font-bold mb-4 text-blue-400">State-wise Subsidy Portals</h4>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                          {selectedScheme.guide.states.map((state: string) => (
+                          {selectedScheme.guide.states.map((state) => (
                             <div key={state} className="p-4 rounded-xl bg-white/5 border border-white/5 text-center">
                               <p className="text-xs font-bold">{state}</p>
                             </div>

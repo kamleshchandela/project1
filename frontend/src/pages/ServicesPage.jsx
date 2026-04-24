@@ -3,16 +3,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Search, MapPin, Star, ShieldCheck, Clock, Phone, AlertCircle, ArrowRight, Zap, Sparkles, Filter, Users, CheckCircle2, Loader2 } from 'lucide-react';
 import { useSelector } from 'react-redux';
-import type { RootState } from '../store';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
 const categories = [
   { name: 'All', icon: '🌟' },
   { name: 'All-Rounder', icon: '🛠️' },
-  { name: 'Plumber', icon: '🪠' },
   { name: 'Electrician', icon: '⚡' },
   { name: 'AC Repair', icon: '❄️' },
+  { name: 'Plumber', icon: '🪠' },
   { name: 'Carpenter', icon: '🪚' },
   { name: 'Painter', icon: '🎨' },
   { name: 'Cleaning', icon: '🧹' },
@@ -21,30 +20,14 @@ const categories = [
   { name: 'Legal', icon: '⚖️' },
 ];
 
-interface Provider {
-  id: string;
-  name: string;
-  service: string;
-  experience: number;
-  reliabilityScore: number;
-  jobsCompleted: number;
-  responseTime: string;
-  priceRange: string;
-  status: string;
-  rating: number;
-  reviews: number;
-  avatar: string;
-  location: string;
-}
-
-const ServicesPage: React.FC = () => {
+const ServicesPage = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [sortOption, setSortOption] = useState('Highest Reliability');
-  const [providers, setProviders] = useState<Provider[]>([]);
+  const [providers, setProviders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     fetchProviders();
@@ -54,10 +37,9 @@ const ServicesPage: React.FC = () => {
     try {
       setLoading(true);
       const response = await api.get('/auth/providers');
-      console.log('DEBUG: Raw Providers from API:', response.data.data.providers);
       const apiProviders = response.data.data.providers || [];
 
-      const mappedProviders = apiProviders.map((p: any) => ({
+      const mappedProviders = apiProviders.map((p) => ({
         id: p._id,
         name: p.fullName,
         service: (p.serviceCategory || 'General Pro').charAt(0).toUpperCase() + (p.serviceCategory || 'General Pro').slice(1),
