@@ -10,6 +10,10 @@ import ServicesPage from './pages/ServicesPage';
 import LoanOptimizerPage from './pages/LoanOptimizerPage';
 import UserDashboard from './pages/UserDashboard';
 import VirtualToursPage from './pages/VirtualToursPage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import SellHomePage from './pages/SellHomePage';
 import { Toaster } from 'react-hot-toast';
 import SplashScreen from './components/SplashScreen';
 import { AnimatePresence } from 'framer-motion';
@@ -31,6 +35,9 @@ function App() {
           <Routes>
             {/* Full-screen routes (no Navbar / Footer) */}
             <Route path="/map" element={<MapPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
             {/* Main app routes with Navbar and Footer */}
             <Route path="/" element={<MainLayout />}>
@@ -42,6 +49,7 @@ function App() {
               <Route path="loan-optimizer" element={<LoanOptimizerPage />} />
               <Route path="dashboard" element={<UserDashboard />} />
               <Route path="virtual-tours" element={<VirtualToursPage />} />
+              <Route path="sell-home" element={<SellHomePage />} />
             </Route>
           </Routes>
         </>

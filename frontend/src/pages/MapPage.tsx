@@ -3,19 +3,20 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { GoogleMap, useJsApiLoader, OverlayView, InfoWindow, Circle, Autocomplete } from '@react-google-maps/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Layers, Shield, Zap, Volume2, Navigation, MapPin, List, X } from 'lucide-react';
+import api from '../services/api';
 
-// ==================== DATA ====================
-
-const mockHomes = [
-  // Ahmedabad properties
-  { id: '1', lat: 23.0225, lng: 72.5714, title: 'Modern Luxury Apartment', address: 'Satellite, Ahmedabad', rent: 28000, score: 85, risk: 'low', beds: 3, type: 'Apartment' },
-  { id: '2', lat: 23.0395, lng: 72.5079, title: 'Premium Villa', address: 'Bodakdev, Ahmedabad', rent: 75000, score: 92, risk: 'low', beds: 4, type: 'Villa' },
-  { id: '3', lat: 23.0732, lng: 72.5182, title: 'Cozy Independent House', address: 'Bopal, Ahmedabad', rent: 22000, score: 72, risk: 'medium', beds: 3, type: 'House' },
-  // Junagadh properties
-  { id: '4', lat: 21.5222, lng: 70.4579, title: 'Smart Tech Studio', address: 'Kalwa Chowk, Junagadh', rent: 10000, score: 88, risk: 'low', beds: 1, type: 'Studio' },
-  { id: '5', lat: 21.5300, lng: 70.4650, title: 'Spacious Family Home', address: 'Dhal Rd, Junagadh', rent: 16000, score: 75, risk: 'medium', beds: 3, type: 'House' },
-  { id: '6', lat: 21.5150, lng: 70.4700, title: 'Budget Apartment', address: 'University Rd, Junagadh', rent: 8000, score: 60, risk: 'high', beds: 2, type: 'Apartment' },
-];
+interface MapProperty {
+  id: string;
+  lat: number;
+  lng: number;
+  title: string;
+  address: string;
+  rent: number;
+  score: number;
+  risk: string;
+  beds: number;
+  type: string;
+}
 
 const mockHospitals = [
   // Ahmedabad hospitals
@@ -64,7 +65,7 @@ const mapThemes: Record<string, { label: string; emoji: string; styles: google.m
 
 // ==================== CUSTOM MARKERS ====================
 
-const HouseMarker: React.FC<{ home: typeof mockHomes[0]; onClick: () => void }> = ({ home, onClick }) => {
+const HouseMarker: React.FC<{ home: MapProperty; onClick: () => void }> = ({ home, onClick }) => {
   const riskColor = home.risk === 'low' ? '#22C55E' : home.risk === 'medium' ? '#F97316' : '#EF4444';
   return (
     <div
@@ -132,17 +133,81 @@ const GardenMarker: React.FC = () => (
   </div>
 );
 
+const TempleMarker: React.FC = () => (
+  <div style={{ transform: 'translate(-50%, -50%)', cursor: 'default' }}>
+    <div style={{
+      width: 28, height: 28,
+      background: 'linear-gradient(135deg, #f59e0b, #b45309)',
+      borderRadius: '50%',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: '16px',
+      boxShadow: '0 0 14px rgba(245,158,11,0.7)',
+      border: '2px solid rgba(255,255,255,0.4)',
+    }}>
+      🛕
+    </div>
+  </div>
+);
+
 // ==================== MAIN PAGE ====================
 
 const MapPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [selectedHome, setSelectedHome] = useState<typeof mockHomes[0] | null>(null);
+  const [homes, setHomes] = useState<MapProperty[]>([]);
+  const [selectedHome, setSelectedHome] = useState<MapProperty | null>(null);
+  const [nearbyHospitals, setNearbyHospitals] = useState<{id:string;lat:number;lng:number;name:string}[]>([]);
+  const [nearbyGardens, setNearbyGardens] = useState<{id:string;lat:number;lng:number;name:string}[]>([]);
+  const [nearbyTemples, setNearbyTemples] = useState<{id:string;lat:number;lng:number;name:string}[]>([]);
+
+  // Fetch properties from MongoDB that have lat/lng
+  useEffect(() => {
+    api.get('/properties').then(res => {
+      const raw = res.data?.data?.properties || [];
+      const mapped: MapProperty[] = raw
+        .filter((p: any) => (p.lat && p.lng) || (p.location?.lat && p.location?.lng))
+        .map((p: any) => ({
+          id: p._id,
+          lat: p.lat || p.location?.lat,
+          lng: p.lng || p.location?.lng,
+          title: p.title || 'Property',
+          address: p.address || '',
+          rent: p.price || p.rent || 0,
+          score: p.healthScore || 75,
+          risk: p.riskLevel || 'low',
+          beds: p.bedrooms || p.beds || 0,
+          type: p.propertyType || p.type || 'Property',
+        }));
+      setHomes(mapped);
+
+      // Collect all nearby places with lat/lng from all properties
+      const hospitals: any[] = [];
+      const gardens: any[] = [];
+      const temples: any[] = [];
+      raw.forEach((p: any) => {
+        const nearby = p.nearbyPlaces;
+        if (!nearby) return;
+        (nearby.hospitals || []).forEach((h: any, i: number) => {
+          if (h.lat && h.lng) hospitals.push({ id: `h-${p._id}-${i}`, lat: h.lat, lng: h.lng, name: h.name });
+        });
+        (nearby.gardens || []).forEach((g: any, i: number) => {
+          if (g.lat && g.lng) gardens.push({ id: `g-${p._id}-${i}`, lat: g.lat, lng: g.lng, name: g.name });
+        });
+        (nearby.temples || []).forEach((t: any, i: number) => {
+          if (t.lat && t.lng) temples.push({ id: `t-${p._id}-${i}`, lat: t.lat, lng: t.lng, name: t.name });
+        });
+      });
+      setNearbyHospitals(hospitals);
+      setNearbyGardens(gardens);
+      setNearbyTemples(temples);
+    }).catch(() => {});
+  }, []);
   const [showFilters, setShowFilters] = useState(false);
   const [showLegend, setShowLegend] = useState(true);
   const [showList, setShowList] = useState(false);
   const [showHospitals, setShowHospitals] = useState(true);
   const [showGardens, setShowGardens] = useState(true);
+  const [showTemples, setShowTemples] = useState(true);
   const [activeLayer, setActiveLayer] = useState<string | null>(null);
   const [mapTheme, setMapTheme] = useState<string>('retro');
   const [showThemePicker, setShowThemePicker] = useState(false);
@@ -172,7 +237,7 @@ const MapPage: React.FC = () => {
     }
   };
 
-  const filteredProperties = mockHomes.filter(home => 
+  const filteredProperties = homes.filter(home => 
     home.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     home.address.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -206,10 +271,10 @@ const MapPage: React.FC = () => {
       map.setZoom(16);
     }
     if (focusId) {
-      const home = mockHomes.find(h => h.id === focusId);
+      const home = homes.find(h => h.id === focusId);
       if (home) setSelectedHome(home);
     }
-  }, [map, searchParams]);
+  }, [map, searchParams, homes]);
 
   if (loadError) {
     return (
@@ -405,6 +470,10 @@ const MapPage: React.FC = () => {
                   <input type="checkbox" checked={showGardens} onChange={e => setShowGardens(e.target.checked)} className="accent-green-500" />
                   <span>🌳</span> Gardens
                 </label>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="checkbox" checked={showTemples} onChange={e => setShowTemples(e.target.checked)} className="accent-amber-500" />
+                  <span>🛕</span> Temples
+                </label>
               </div>
             </motion.div>
           )}
@@ -421,13 +490,18 @@ const MapPage: React.FC = () => {
             className="absolute left-4 top-24 z-[1000] bg-black/80 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl w-72 overflow-hidden"
           >
             <div className="flex items-center justify-between p-4 border-b border-white/10">
-              <h3 className="font-bold text-white">{mockHomes.length} Properties</h3>
+              <h3 className="font-bold text-white">{homes.length} Properties on Map</h3>
               <button onClick={() => setShowList(false)} className="p-1 rounded-lg hover:bg-white/10 transition-colors">
                 <X size={16} />
               </button>
             </div>
             <div className="max-h-[calc(100vh-300px)] overflow-y-auto">
-              {mockHomes.map(home => (
+              {homes.length === 0 ? (
+                <div className="p-8 text-center text-gray-500 text-sm">
+                  No properties with map location found.<br/>
+                  <span className="text-xs text-gray-600">Add lat & lng to your MongoDB properties to show them here.</span>
+                </div>
+              ) : homes.map(home => (
                 <div
                   key={home.id}
                   onClick={() => {
@@ -478,7 +552,7 @@ const MapPage: React.FC = () => {
           onClick={() => setSelectedHome(null)}
         >
           {/* House Markers */}
-          {mockHomes.map(home => (
+          {homes.map(home => (
             <OverlayView
               key={home.id}
               position={{ lat: home.lat, lng: home.lng }}
@@ -489,7 +563,7 @@ const MapPage: React.FC = () => {
           ))}
 
           {/* Layer Visualizations */}
-          {activeLayer === 'safety' && mockHomes.map(home => (
+          {activeLayer === 'safety' && homes.map(home => (
             <Circle
               key={`safety-${home.id}`}
               center={{ lat: home.lat, lng: home.lng }}
@@ -504,7 +578,7 @@ const MapPage: React.FC = () => {
             />
           ))}
 
-          {activeLayer === 'water' && mockHomes.map(home => (
+          {activeLayer === 'water' && homes.map(home => (
             <Circle
               key={`water-${home.id}`}
               center={{ lat: home.lat, lng: home.lng }}
@@ -519,7 +593,7 @@ const MapPage: React.FC = () => {
             />
           ))}
 
-          {activeLayer === 'noise' && mockHomes.map(home => (
+          {activeLayer === 'noise' && homes.map(home => (
             <Circle
               key={`noise-${home.id}`}
               center={{ lat: home.lat, lng: home.lng }}
@@ -534,8 +608,8 @@ const MapPage: React.FC = () => {
             />
           ))}
 
-          {/* Hospital Markers */}
-          {showHospitals && mockHospitals.map(h => (
+          {/* Hospital Markers (from nearbyPlaces in DB) */}
+          {showHospitals && nearbyHospitals.map(h => (
             <OverlayView
               key={h.id}
               position={{ lat: h.lat, lng: h.lng }}
@@ -547,8 +621,8 @@ const MapPage: React.FC = () => {
             </OverlayView>
           ))}
 
-          {/* Garden Markers */}
-          {showGardens && mockGardens.map(g => (
+          {/* Garden Markers (from nearbyPlaces in DB) */}
+          {showGardens && nearbyGardens.map(g => (
             <OverlayView
               key={g.id}
               position={{ lat: g.lat, lng: g.lng }}
@@ -556,6 +630,19 @@ const MapPage: React.FC = () => {
             >
               <div title={g.name}>
                 <GardenMarker />
+              </div>
+            </OverlayView>
+          ))}
+
+          {/* Temple Markers (from nearbyPlaces in DB) */}
+          {showTemples && nearbyTemples.map(t => (
+            <OverlayView
+              key={t.id}
+              position={{ lat: t.lat, lng: t.lng }}
+              mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+            >
+              <div title={t.name}>
+                <TempleMarker />
               </div>
             </OverlayView>
           ))}
@@ -663,6 +750,10 @@ const MapPage: React.FC = () => {
               <div className="flex items-center gap-2">
                 <span className="text-lg">🌳</span>
                 <span className="text-gray-300">Garden / Park</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-lg">🛕</span>
+                <span className="text-gray-300">Temple</span>
               </div>
             </div>
           </motion.div>

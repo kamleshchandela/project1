@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../store';
 import { toggleTheme } from '../store/slices/themeSlice';
-import { Sun, Moon, Menu, X, LogOut, ChevronDown } from 'lucide-react';
+import { Sun, Moon, Menu, X, LogOut, ChevronDown, User } from 'lucide-react';
 import { logout } from '../store/slices/authSlice';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -28,6 +28,7 @@ const Navbar: React.FC = () => {
     { name: 'Map', path: '/map' },
     { name: '3D Tours', path: '/virtual-tours' },
     { name: 'Services', path: '/services' },
+    { name: 'Sell Home', path: '/sell-home' },
     { name: 'Schemes', path: '/schemes' }
   ];
 
@@ -81,28 +82,41 @@ const Navbar: React.FC = () => {
 
           {isAuthenticated ? (
             <div className="relative group">
-              <button className="flex items-center space-x-3 bg-white/5 pl-2 pr-4 py-1.5 rounded-full border border-white/10 hover:border-amber-primary/30 transition-all duration-300">
-                <img src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`} alt="avatar" className="w-8 h-8 rounded-full border border-amber-primary/30" />
+              <button className="flex items-center space-x-3 bg-white/5 pl-2 pr-4 py-1.5 rounded-full border border-white/10 hover:border-amber-primary/30 transition-all duration-300 relative z-10">
+                <div className="w-8 h-8 rounded-full border border-amber-primary/30 overflow-hidden flex items-center justify-center bg-amber-primary/10">
+                  {user?.avatar ? (
+                    <img src={user.avatar} alt="avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <User size={18} className="text-amber-primary" />
+                  )}
+                </div>
                 <div className="text-left">
-                  <p className="text-xs font-bold text-white/90 leading-none">{user?.name?.split(' ')[0]}</p>
+                  <p className="text-xs font-bold text-white/90 leading-none">{user?.fullName?.split(' ')[0] || 'User'}</p>
                   <p className="text-[10px] text-white/40 font-mono">Premium</p>
                 </div>
                 <ChevronDown size={14} className="text-white/40 group-hover:text-amber-primary transition-colors" />
               </button>
               
-              <div className="absolute top-full right-0 mt-3 w-48 py-2 glass-panel rounded-2xl opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 border-white/10">
-                <button 
-                  onClick={() => dispatch(logout())} 
-                  className="w-full flex items-center px-4 py-3 text-sm text-red-400 hover:bg-red-400/10 transition-colors"
-                >
-                  <LogOut size={16} className="mr-3" /> Sign Out
-                </button>
+              <div className="absolute top-[calc(100%-0.5rem)] right-0 pt-4 w-48 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 z-50">
+                <div className="glass-panel py-2 rounded-2xl border-white/10 shadow-premium">
+                  <button 
+                    onClick={() => dispatch(logout())} 
+                    className="w-full flex items-center px-4 py-3 text-sm text-red-400 hover:bg-red-400/10 transition-colors"
+                  >
+                    <LogOut size={16} className="mr-3" /> Sign Out
+                  </button>
+                </div>
               </div>
             </div>
           ) : (
-            <Link to="/login" className="btn-amber !py-2.5 !px-7 text-sm">
-              Sign In
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link to="/login" className="text-white/60 hover:text-white text-sm font-bold">
+                Sign In
+              </Link>
+              <Link to="/signup" className="btn-amber !py-2.5 !px-7 text-sm">
+                Sign Up
+              </Link>
+            </div>
           )}
         </div>
 

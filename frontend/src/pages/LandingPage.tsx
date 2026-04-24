@@ -292,7 +292,7 @@ const LandingPage: React.FC = () => {
       <motion.a 
         whileHover={{ scale: 1.1, rotate: 5 }}
         whileTap={{ scale: 0.9 }}
-        href="https://wa.me/919876543210"
+        href="https://wa.me/919979265140"
         className="fixed bottom-12 right-12 z-50 w-24 h-24 bg-success rounded-[2.5rem] flex items-center justify-center shadow-[0_20px_60px_rgba(16,185,129,0.5)] group transition-all"
       >
         <div className="absolute inset-0 bg-success rounded-[2.5rem] animate-ping opacity-20"></div>

@@ -9,7 +9,7 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-  user: null,
+  user: JSON.parse(localStorage.getItem('hometruth_user') || 'null'),
   token: localStorage.getItem('hometruth_token'),
   isAuthenticated: !!localStorage.getItem('hometruth_token'),
   loading: false,
@@ -28,12 +28,14 @@ const authSlice = createSlice({
       state.token = token;
       state.isAuthenticated = true;
       localStorage.setItem('hometruth_token', token);
+      localStorage.setItem('hometruth_user', JSON.stringify(user));
     },
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
       localStorage.removeItem('hometruth_token');
+      localStorage.removeItem('hometruth_user');
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
