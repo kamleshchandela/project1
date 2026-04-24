@@ -211,6 +211,39 @@ exports.resetPassword = async (req, res) => {
   }
 };
 
+exports.recoverPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'No user found with that email' });
+    }
+
+    // Generate a random temporary password (8 characters)
+    const tempPassword = Math.random().toString(36).slice(-8);
+    
+    // Update user's password
+    user.password = tempPassword;
+    await user.save();
+
+    // Return the plain text password to the frontend
+    // This allows the frontend to send it via EmailJS
+    res.status(200).json({ 
+      status: 'success', 
+      message: 'New password generated',
+      data: { 
+        tempPassword,
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone || 'Not provided'
+      } 
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.getProviders = async (req, res) => {
   try {
     const providers = await User.find({ role: 'provider' });

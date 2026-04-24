@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Home, MapPin, Ruler, IndianRupee, MessageCircle, ArrowRight, ShieldCheck, Zap, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Home, MapPin, Ruler, IndianRupee, MessageCircle, ArrowRight, ShieldCheck, Zap, ChevronDown, Link as LinkIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const SellHomePage: React.FC = () => {
   const [formData, setFormData] = useState({
-    propertyType: 'Villa',
+    propertyType: 'Luxury Villa',
     location: '',
     area: '',
     expectedPrice: '',
-    name: ''
+    name: '',
+    googleMapsLink: ''
   });
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleWhatsAppConnect = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +24,7 @@ Property Details:
 - Area: ${formData.area}
 - Expected Price: ${formData.expectedPrice}
 - Contact Name: ${formData.name}
+- Map Link: ${formData.googleMapsLink || 'Not provided'}
 
 Please guide me with the offline verification process.`;
 
@@ -80,28 +83,53 @@ Please guide me with the offline verification process.`;
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="glass-panel p-10 rounded-[4rem] border-white/5 bg-white/[0.01] shadow-premium relative overflow-hidden"
+          className="glass-panel p-8 rounded-[2.5rem] border-white/5 bg-white/[0.01] shadow-premium relative overflow-hidden"
         >
           <div className="relative z-10">
-            <h2 className="text-3xl font-serif font-bold mb-8">Asset Details</h2>
-            <form onSubmit={handleWhatsAppConnect} className="space-y-6">
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
+            <h2 className="text-2xl font-serif font-bold mb-6">Asset Details</h2>
+            <form onSubmit={handleWhatsAppConnect} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2 relative">
                   <label className="text-[10px] text-white/30 font-black uppercase tracking-[0.2em] ml-1">Property Type</label>
-                  <div className="relative group">
-                    <select 
-                      className="w-full bg-white/[0.03] border border-white/5 rounded-2xl py-4 px-6 text-sm text-white focus:outline-none focus:border-amber-primary/40 appearance-none font-medium transition-all hover:bg-white/[0.05] cursor-pointer"
-                      value={formData.propertyType}
-                      onChange={(e) => setFormData({...formData, propertyType: e.target.value})}
-                    >
-                      {propertyTypes.map(type => (
-                        <option key={type} value={type} className="bg-[#0F0905] text-white py-4">{type}</option>
-                      ))}
-                    </select>
-                    <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-white/20 group-focus-within:text-amber-primary transition-colors">
-                      <ChevronDown size={18} />
-                    </div>
-                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className={`w-full flex items-center justify-between bg-white/[0.03] border border-white/5 rounded-2xl py-4 px-6 text-sm text-white transition-all hover:bg-white/[0.05] ${isDropdownOpen ? 'border-amber-primary/40' : ''}`}
+                  >
+                    <span className="font-medium">{formData.propertyType}</span>
+                    <motion.div animate={{ rotate: isDropdownOpen ? 180 : 0 }}>
+                      <ChevronDown size={18} className="text-white/20" />
+                    </motion.div>
+                  </button>
+
+                  <AnimatePresence>
+                    {isDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute left-0 right-0 mt-2 bg-[#1A110A] border border-white/10 p-2 rounded-2xl z-[50] shadow-2xl backdrop-blur-3xl overflow-hidden"
+                      >
+                        {propertyTypes.map((type) => (
+                          <button
+                            key={type}
+                            type="button"
+                            onClick={() => {
+                              setFormData({ ...formData, propertyType: type });
+                              setIsDropdownOpen(false);
+                            }}
+                            className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold transition-all ${
+                              formData.propertyType === type 
+                              ? 'bg-amber-primary/10 text-amber-primary' 
+                              : 'text-white/40 hover:bg-white/5 hover:text-white'
+                            }`}
+                          >
+                            {type}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] text-white/30 font-black uppercase tracking-[0.2em] ml-1">Location</label>
@@ -119,7 +147,7 @@ Please guide me with the offline verification process.`;
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-[10px] text-white/30 font-black uppercase tracking-[0.2em] ml-1">Total Area (sq.ft)</label>
                   <div className="relative group">
@@ -151,6 +179,21 @@ Please guide me with the offline verification process.`;
               </div>
 
               <div className="space-y-2">
+                <label className="text-[10px] text-white/30 font-black uppercase tracking-[0.2em] ml-1">Google Maps Link</label>
+                <div className="relative group">
+                  <LinkIcon size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-amber-primary transition-colors" />
+                  <input 
+                    type="url" 
+                    placeholder="Paste Google Maps link here"
+                    className="w-full bg-white/[0.03] border border-white/5 rounded-2xl py-4 pl-12 pr-6 text-sm text-white focus:outline-none focus:border-amber-primary/40 transition-all font-medium"
+                    value={formData.googleMapsLink}
+                    onChange={(e) => setFormData({...formData, googleMapsLink: e.target.value})}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
                 <label className="text-[10px] text-white/30 font-black uppercase tracking-[0.2em] ml-1">Owner Name</label>
                 <input 
                   type="text" 
@@ -164,7 +207,7 @@ Please guide me with the offline verification process.`;
 
               <button 
                 type="submit" 
-                className="w-full py-5 bg-[#25D366] hover:bg-[#20bd5c] rounded-3xl text-white font-bold text-lg shadow-[0_10px_40px_rgba(37,211,102,0.2)] flex items-center justify-center gap-3 transition-all active:scale-[0.98] mt-6"
+                className="w-full py-5 bg-[#25D366] hover:bg-[#20bd5c] rounded-3xl text-white font-bold text-lg shadow-[0_10px_40px_rgba(37,211,102,0.2)] flex items-center justify-center gap-3 transition-all active:scale-[0.98] mt-4"
               >
                 <MessageCircle size={24} />
                 Connect on WhatsApp

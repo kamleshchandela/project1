@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Search, MapPin, Star, ShieldCheck, Clock, Phone, AlertCircle, ArrowRight, Zap, Sparkles, Filter, Users, CheckCircle2, Loader2 } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../store';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -41,6 +43,7 @@ const ServicesPage: React.FC = () => {
   const [sortOption, setSortOption] = useState('Highest Reliability');
   const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     fetchProviders();
@@ -52,7 +55,7 @@ const ServicesPage: React.FC = () => {
       const response = await api.get('/auth/providers');
       console.log('DEBUG: Raw Providers from API:', response.data.data.providers);
       const apiProviders = response.data.data.providers || [];
-      
+
       const mappedProviders = apiProviders.map((p: any) => ({
         id: p._id,
         name: p.fullName,
@@ -80,11 +83,11 @@ const ServicesPage: React.FC = () => {
   };
 
   const filteredProviders = providers.filter(provider => {
-    const matchesCategory = activeCategory === 'All' || 
-                           provider.service.toLowerCase().includes(activeCategory.toLowerCase());
-    const matchesSearch = provider.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          provider.service.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          provider.location.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = activeCategory === 'All' ||
+      provider.service.toLowerCase().includes(activeCategory.toLowerCase());
+    const matchesSearch = provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      provider.service.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      provider.location.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
@@ -92,7 +95,7 @@ const ServicesPage: React.FC = () => {
 
   return (
     <div className="bg-[#0F0905] min-h-screen pt-32 pb-20 px-6 lg:px-12 selection:bg-amber-primary/30">
-      
+
       {/* Background Atmosphere */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-0 right-0 w-[60vw] h-[60vw] rounded-full bg-amber-primary/5 blur-[150px]"></div>
@@ -100,18 +103,18 @@ const ServicesPage: React.FC = () => {
       </div>
 
       <div className="max-w-[1800px] mx-auto relative z-10">
-        
+
         {/* Cinematic Header */}
         <div className="flex flex-col lg:flex-row justify-between items-end mb-20 gap-12">
           <div className="max-w-3xl">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="inline-flex items-center gap-3 px-4 py-1.5 rounded-full glass-panel border-amber-primary/20 bg-amber-primary/5 text-amber-primary text-[10px] font-black uppercase tracking-[0.3em] mb-8"
             >
               <ShieldCheck size={12} /> Trusted Professionals Network
             </motion.div>
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
@@ -119,7 +122,7 @@ const ServicesPage: React.FC = () => {
             >
               Home <span className="text-gradient italic">Essentials.</span>
             </motion.h1>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -130,13 +133,13 @@ const ServicesPage: React.FC = () => {
           </div>
 
           {/* Emergency Alert Widget */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="glass-panel p-8 rounded-[2.5rem] border-critical/20 bg-critical/5 flex flex-col gap-6 w-full lg:w-96 shadow-[0_20px_50px_rgba(239,68,68,0.1)] relative overflow-hidden group"
           >
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-12 transition-transform">
-               <AlertCircle size={80} className="text-critical" />
+              <AlertCircle size={80} className="text-critical" />
             </div>
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-4 text-critical">
@@ -145,7 +148,10 @@ const ServicesPage: React.FC = () => {
               </div>
               <h3 className="text-2xl font-bold mb-2">Need Help Now?</h3>
               <p className="text-white/40 text-sm leading-relaxed mb-6">Dispatch a verified pro to your door in under 60 minutes.</p>
-              <button className="w-full bg-critical hover:bg-critical/80 text-white py-4 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-critical/20 flex items-center justify-center gap-3">
+              <button
+                onClick={() => window.open('tel:9979265140')}
+                className="w-full bg-critical hover:bg-critical/80 text-white py-4 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-critical/20 flex items-center justify-center gap-3"
+              >
                 <Phone size={16} /> Request Quick Help
               </button>
             </div>
@@ -160,10 +166,10 @@ const ServicesPage: React.FC = () => {
           </div>
           <div className="flex gap-6 overflow-x-auto pb-8 no-scrollbar scroll-smooth">
             {categories.map((cat, i) => {
-              const count = cat.name === 'All' 
-                ? providers.length 
+              const count = cat.name === 'All'
+                ? providers.length
                 : providers.filter(p => p.service.toLowerCase().includes(cat.name.toLowerCase())).length;
-              
+
               return (
                 <motion.button
                   key={cat.name}
@@ -171,11 +177,10 @@ const ServicesPage: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
                   onClick={() => setActiveCategory(cat.name)}
-                  className={`flex-shrink-0 w-48 p-8 rounded-[2.5rem] transition-all duration-500 flex flex-col items-center gap-6 border ${
-                    activeCategory === cat.name 
-                    ? 'glass-panel border-amber-primary/50 bg-amber-primary/10 shadow-amber-glow-strong' 
+                  className={`flex-shrink-0 w-48 p-8 rounded-[2.5rem] transition-all duration-500 flex flex-col items-center gap-6 border ${activeCategory === cat.name
+                    ? 'glass-panel border-amber-primary/50 bg-amber-primary/10 shadow-amber-glow-strong'
                     : 'glass-panel border-white/5 hover:border-white/20'
-                  }`}
+                    }`}
                 >
                   <div className={`w-16 h-16 rounded-3xl flex items-center justify-center text-3xl transition-transform duration-500 ${activeCategory === cat.name ? 'scale-110' : ''}`}>
                     {cat.icon}
@@ -202,22 +207,22 @@ const ServicesPage: React.FC = () => {
                   <p className="text-white/30 text-lg">Top-rated verified professionals ready for dispatch.</p>
                 </div>
               </div>
-              
+
               <div className="relative group w-full">
-                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-amber-primary transition-all" size={20} />
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-amber-primary transition-all duration-500" size={20} />
                 <input
                   type="text"
-                  placeholder={`Search professionals by name or specialty...`}
+                  placeholder="Search professionals by name or specialty..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-16 pr-6 py-5 rounded-[2rem] glass-panel border-white/5 outline-none focus:border-amber-primary/30 focus:bg-amber-primary/[0.01] transition-all text-base text-white placeholder:text-white/10 shadow-premium"
+                  className="w-full pl-16 pr-6 py-4 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/20 outline-none focus:border-amber-primary/50 focus:bg-white/10 transition-all text-lg text-white placeholder:text-white/50 shadow-premium"
                 />
               </div>
             </div>
 
             {/* CUSTOM PREMIUM DROPDOWN */}
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setIsSortOpen(!isSortOpen)}
                 className={`flex items-center gap-6 px-8 py-5 glass-panel rounded-2xl border-white/5 transition-all duration-300 ${isSortOpen ? 'border-amber-primary/30 bg-amber-primary/5' : ''}`}
               >
@@ -245,11 +250,10 @@ const ServicesPage: React.FC = () => {
                           setSortOption(option);
                           setIsSortOpen(false);
                         }}
-                        className={`w-full text-left px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                          sortOption === option 
-                          ? 'bg-amber-primary/10 text-amber-primary' 
+                        className={`w-full text-left px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${sortOption === option
+                          ? 'bg-amber-primary/10 text-amber-primary'
                           : 'text-white/40 hover:bg-white/5 hover:text-white'
-                        }`}
+                          }`}
                       >
                         {option}
                       </button>
@@ -305,11 +309,10 @@ const ServicesPage: React.FC = () => {
                           </div>
                         </div>
                       </div>
-                      <div className={`px-4 py-2 rounded-2xl text-[9px] font-black uppercase tracking-widest border ${
-                        provider.status === 'Available' 
-                        ? 'bg-success/5 text-success border-success/20 animate-pulse' 
+                      <div className={`px-4 py-2 rounded-2xl text-[9px] font-black uppercase tracking-widest border ${provider.status === 'Available'
+                        ? 'bg-success/5 text-success border-success/20 animate-pulse'
                         : 'bg-warning/5 text-warning border-warning/20'
-                      }`}>
+                        }`}>
                         {provider.status}
                       </div>
                     </div>
@@ -348,21 +351,23 @@ const ServicesPage: React.FC = () => {
                     <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-auto gap-4">
                       <div className="flex flex-col">
                         <p className="text-[9px] text-white/20 font-black uppercase tracking-widest mb-1">Fee Range</p>
-                        <p className="text-lg font-bold text-white">{provider.priceRange.split(' - ')[0]}+</p>
+                        <p className="text-lg font-bold text-white">{provider.priceRange.split(' - ')[0]}</p>
                       </div>
                       <div className="flex gap-3">
-                         <button 
-                           onClick={() => window.open(`tel:${provider.phone || '9979265140'}`)}
-                           className="p-4 rounded-2xl glass-panel border-white/10 text-white hover:bg-white/10 transition-all"
-                         >
-                            <Phone size={20} />
-                         </button>
-                         <button 
-                           onClick={() => window.open(`https://wa.me/${(provider.phone || '9979265140').replace(/\D/g, '')}?text=${encodeURIComponent(`Hello! I'm interested in booking a session with you for ${provider.service} services through HomeTruth AI.`)}`)}
-                           className="btn-amber !py-4 !px-8 text-sm font-bold flex items-center justify-center gap-3 shadow-amber-glow"
-                         >
-                            Book Session <ArrowRight size={18} />
-                         </button>
+                        <button
+                          onClick={() => window.open(`tel:${provider.phone || '9979265140'}`)}
+                          className="p-4 rounded-2xl glass-panel border-white/10 text-white hover:bg-white/10 transition-all"
+                        >
+                          <Phone size={20} />
+                        </button>
+                        <button
+                          onClick={() => window.open(`https://wa.me/${(provider.phone || '9979265140').replace(/\D/g, '')}?text=${encodeURIComponent(
+                            `Hello! I am ${user?.fullName || 'a customer'} from ${user?.location || 'your area'}. I am interested in booking a session with you for ${provider.service} services through HomeTruth AI.`
+                          )}`)}
+                          className="btn-amber !py-4 !px-8 text-sm font-bold flex items-center justify-center gap-3 shadow-amber-glow"
+                        >
+                          Book Session <ArrowRight size={18} />
+                        </button>
                       </div>
                     </div>
                   </motion.div>

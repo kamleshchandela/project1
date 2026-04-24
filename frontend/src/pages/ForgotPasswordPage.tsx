@@ -1,62 +1,56 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, ArrowRight, ArrowLeft, ShieldCheck, Lock, RotateCcw, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
-import OtpInput from 'react-otp-input';
+import { Mail, ArrowRight, ArrowLeft, ShieldCheck, Lock, RotateCcw, CheckCircle2 } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
 const ForgotPasswordPage: React.FC = () => {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate();
 
-  const handleSendOTP = async (e: React.FormEvent) => {
+  const handleRecoverPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.post('/auth/forgot-password', { email });
-      toast.success('OTP sent to your email');
+      // 1. Get new password from backend
+      const response = await api.post('/auth/recover-password', { email });
+      const { tempPassword, fullName, phone, email: userEmail } = response.data.data;
+
+      // 2. Send via EmailJS
+      const templateParams = {
+        to_name: fullName,
+        to_email: userEmail,
+        user_name: fullName,
+        user_email: userEmail,
+        user_phone: phone,
+        message: `Hello ${fullName}, your account recovery details are:
+        
+Name: ${fullName}
+Email: ${userEmail}
+Phone: ${phone}
+New Temporary Password: ${tempPassword}
+
+Please use this password to log in and then change it in your settings.`,
+        temp_password: tempPassword
+      };
+
+      await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        templateParams,
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      );
+
+      toast.success('New password sent to your email');
       setStep(2);
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to send OTP');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyOTP = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await api.post('/auth/verify-otp', { email, otp });
-      toast.success('OTP verified');
-      setStep(3);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Invalid OTP');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResetPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password !== confirmPassword) {
-      return toast.error('Passwords do not match');
-    }
-    setLoading(true);
-    try {
-      await api.post('/auth/reset-password', { email, otp, password });
-      toast.success('Password updated successfully');
-      navigate('/login');
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Reset failed');
+      console.error('Recovery error:', error);
+      toast.error(error.response?.data?.message || 'Failed to recover password');
     } finally {
       setLoading(false);
     }
@@ -74,7 +68,7 @@ const ForgotPasswordPage: React.FC = () => {
 
       <div className="w-full max-w-md relative z-10">
         <AnimatePresence mode="wait">
-          {step === 1 && (
+          {step === 1 ? (
             <motion.div
               key="step1"
               initial={{ opacity: 0, x: 20 }}
@@ -82,26 +76,17 @@ const ForgotPasswordPage: React.FC = () => {
               exit={{ opacity: 0, x: -20 }}
               className="glass-panel p-10 rounded-[3rem] border-white/5 bg-white/[0.02]"
             >
-              <div className="flex justify-between items-center mb-10">
-                 <span className="text-[10px] text-amber-primary font-black uppercase tracking-[0.3em]">Step 1 of 3</span>
-                 <div className="flex gap-1.5">
-                    <div className="w-8 h-1.5 rounded-full bg-amber-primary"></div>
-                    <div className="w-8 h-1.5 rounded-full bg-white/5"></div>
-                    <div className="w-8 h-1.5 rounded-full bg-white/5"></div>
-                 </div>
-              </div>
-
-              <div className="mb-10">
-                <div className="w-16 h-16 bg-amber-primary/10 rounded-2xl flex items-center justify-center mb-6 border border-amber-primary/20">
+              <div className="mb-10 text-center">
+                <div className="w-16 h-16 bg-amber-primary/10 rounded-2xl flex items-center justify-center mb-6 border border-amber-primary/20 mx-auto">
                    <RotateCcw className="text-amber-primary" />
                 </div>
                 <h2 className="text-2xl font-serif font-bold mb-4">Forgot Password?</h2>
                 <p className="text-white/40 text-sm leading-relaxed">
-                  Enter the email address associated with your account and we'll send you a One-Time Password to reset it.
+                  Enter your email and we'll send your new password directly to your inbox.
                 </p>
               </div>
 
-              <form onSubmit={handleSendOTP} className="space-y-8">
+              <form onSubmit={handleRecoverPassword} className="space-y-8">
                 <div className="space-y-2">
                   <label className="text-[10px] text-white/30 font-black uppercase tracking-[0.2em] ml-1">Email Address</label>
                   <div className="relative group">
@@ -122,7 +107,7 @@ const ForgotPasswordPage: React.FC = () => {
                   disabled={loading}
                   className="btn-amber w-full py-5 rounded-2xl text-base font-bold shadow-amber-glow-strong flex items-center justify-center gap-3"
                 >
-                  {loading ? 'Sending...' : 'Send OTP'}
+                  {loading ? 'Recovering...' : 'Send Password'}
                   {!loading && <ArrowRight size={18} />}
                 </button>
 
@@ -135,141 +120,29 @@ const ForgotPasswordPage: React.FC = () => {
                 </button>
               </form>
             </motion.div>
-          )}
-
-          {step === 2 && (
+          ) : (
             <motion.div
               key="step2"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="glass-panel p-10 rounded-[3rem] border-white/5 bg-white/[0.02]"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="glass-panel p-10 rounded-[3rem] border-white/5 bg-white/[0.02] text-center"
             >
-              <div className="flex justify-between items-center mb-10">
-                 <span className="text-[10px] text-amber-primary font-black uppercase tracking-[0.3em]">Step 2 of 3</span>
-                 <div className="flex gap-1.5">
-                    <div className="w-8 h-1.5 rounded-full bg-amber-primary/40"></div>
-                    <div className="w-8 h-1.5 rounded-full bg-amber-primary"></div>
-                    <div className="w-8 h-1.5 rounded-full bg-white/5"></div>
-                 </div>
+              <div className="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mb-8 mx-auto border border-success/20">
+                 <CheckCircle2 size={40} className="text-success" />
               </div>
-
-              <div className="text-center mb-10">
-                <h2 className="text-3xl font-serif font-bold mb-4">Verify It's You</h2>
-                <p className="text-white/40 text-sm leading-relaxed">
-                  We've sent a 6-digit code to <br /><span className="text-white/60 font-bold">{email}</span>
-                </p>
-              </div>
-
-              <form onSubmit={handleVerifyOTP} className="space-y-10">
-                <div className="flex justify-center">
-                  <OtpInput
-                    value={otp}
-                    onChange={setOtp}
-                    numInputs={6}
-                    renderInput={(props) => <input {...props} />}
-                    inputStyle={{
-                      width: '3.5rem',
-                      height: '4.5rem',
-                      margin: '0 0.4rem',
-                      fontSize: '1.5rem',
-                      fontWeight: 'bold',
-                      borderRadius: '1rem',
-                      border: '1px solid rgba(255, 255, 255, 0.05)',
-                      backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                      color: 'white',
-                      outline: 'none',
-                    }}
-                    focusStyle={{
-                      border: '1px solid #F2C36B',
-                      boxShadow: '0 0 15px rgba(242, 195, 107, 0.2)',
-                    }}
-                  />
-                </div>
-
-                <button 
-                  type="submit" 
-                  disabled={loading || otp.length < 6}
-                  className="btn-amber w-full py-5 rounded-2xl text-base font-bold shadow-amber-glow-strong flex items-center justify-center gap-3"
-                >
-                  {loading ? 'Verifying...' : 'Verify OTP'}
-                </button>
-
-                <div className="text-center">
-                  <button 
-                    type="button"
-                    onClick={handleSendOTP}
-                    className="text-white/30 hover:text-white text-sm font-medium transition-colors"
-                  >
-                    Didn't receive the code? <span className="text-amber-primary font-bold">Resend Code</span>
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          )}
-
-          {step === 3 && (
-            <motion.div
-              key="step3"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="glass-panel p-10 rounded-[3rem] border-white/5 bg-white/[0.02]"
-            >
-              <div className="mb-10">
-                <h2 className="text-3xl font-serif font-bold mb-4">Secure Your Account</h2>
-                <p className="text-white/40 text-sm leading-relaxed">
-                  Create a strong, unique password to complete your account recovery.
-                </p>
-              </div>
-
-              <form onSubmit={handleResetPassword} className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] text-white/30 font-black uppercase tracking-[0.2em] ml-1">New Password</label>
-                  <div className="relative group">
-                    <Lock size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-amber-primary transition-colors" />
-                    <input 
-                      type={showPassword ? 'text' : 'password'} 
-                      placeholder="Enter new password"
-                      className="w-full bg-black/40 border border-white/5 rounded-2xl py-5 pl-14 pr-14 text-sm text-white focus:outline-none focus:border-amber-primary/40 transition-all"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                    <button 
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-5 flex items-center text-white/20 hover:text-white transition-colors"
-                    >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] text-white/30 font-black uppercase tracking-[0.2em] ml-1">Confirm Password</label>
-                  <div className="relative group">
-                    <RotateCcw size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-amber-primary transition-colors" />
-                    <input 
-                      type={showPassword ? 'text' : 'password'} 
-                      placeholder="Re-enter password"
-                      className="w-full bg-black/40 border border-white/5 rounded-2xl py-5 pl-14 pr-6 text-sm text-white focus:outline-none focus:border-amber-primary/40 transition-all"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <button 
-                  type="submit" 
-                  disabled={loading}
-                  className="btn-amber w-full py-5 rounded-2xl text-base font-bold shadow-amber-glow-strong flex items-center justify-center gap-3 mt-4"
-                >
-                  {loading ? 'Updating...' : 'Update Password'}
-                  {!loading && <CheckCircle2 size={18} />}
-                </button>
-              </form>
+              <h2 className="text-3xl font-serif font-bold mb-4">Email Sent!</h2>
+              <p className="text-white/40 text-sm leading-relaxed mb-10">
+                A new password has been sent to <br />
+                <span className="text-white font-bold">{email}</span>. <br />
+                Please check your inbox and use it to log in.
+              </p>
+              
+              <button 
+                onClick={() => navigate('/login')}
+                className="btn-amber w-full py-5 rounded-2xl text-base font-bold shadow-amber-glow"
+              >
+                Go to Login
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -287,3 +160,4 @@ const ForgotPasswordPage: React.FC = () => {
 };
 
 export default ForgotPasswordPage;
+

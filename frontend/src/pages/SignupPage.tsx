@@ -34,6 +34,10 @@ const SignupPage: React.FC = () => {
       return toast.error('Password must be at least 6 characters');
     }
 
+    if (!avatar) {
+      return toast.error('Please upload a profile photo');
+    }
+
     setLoading(true);
     try {
       const response = await api.post('/auth/register', { 
