@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 
 const categories = [
   { name: 'All', icon: '🌟' },
+  { name: 'All-Rounder', icon: '🛠️' },
   { name: 'Plumber', icon: '🪠' },
   { name: 'Electrician', icon: '⚡' },
   { name: 'AC Repair', icon: '❄️' },
@@ -179,14 +180,14 @@ const ServicesPage: React.FC = () => {
                   onClick={() => setActiveCategory(cat.name)}
                   className={`flex-shrink-0 w-48 p-8 rounded-[2.5rem] transition-all duration-500 flex flex-col items-center gap-6 border ${activeCategory === cat.name
                     ? 'glass-panel border-amber-primary/50 bg-amber-primary/10 shadow-amber-glow-strong'
-                    : 'glass-panel border-white/5 hover:border-white/20'
+                    : 'glass-panel border-white/5 hover:border-white/20 bg-white/[0.02]'
                     }`}
                 >
                   <div className={`w-16 h-16 rounded-3xl flex items-center justify-center text-3xl transition-transform duration-500 ${activeCategory === cat.name ? 'scale-110' : ''}`}>
                     {cat.icon}
                   </div>
                   <div className="text-center">
-                    <p className={`text-sm font-bold mb-1 ${activeCategory === cat.name ? 'text-amber-primary' : 'text-white/60'}`}>{cat.name}</p>
+                    <p className={`text-lg font-bold tracking-tight mb-1 ${activeCategory === cat.name ? 'text-amber-primary' : 'text-white'}`}>{cat.name}</p>
                     <p className="text-[10px] text-white/20 font-black uppercase tracking-widest">{count} Pros</p>
                   </div>
                 </motion.button>

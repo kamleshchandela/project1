@@ -208,20 +208,26 @@ const SignupPage: React.FC = () => {
                   <div className="relative group">
                     <select 
                       className="w-full bg-white/[0.03] border border-white/5 rounded-xl py-4 px-5 text-sm text-white focus:outline-none focus:border-amber-primary/40 transition-all appearance-none font-medium cursor-pointer hover:border-white/10"
-                      style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffffff40' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 16px center' }}
+                      style={{ 
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffffff40' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, 
+                        backgroundRepeat: 'no-repeat', 
+                        backgroundPosition: 'right 16px center' 
+                      }}
                       value={formData.serviceCategory}
                       onChange={(e) => setFormData({...formData, serviceCategory: e.target.value})}
                       required
                     >
-                      <option value="" style={{background: '#1A110A', color: '#ffffff80'}}>Select Service Type</option>
+                      <option value="" style={{background: '#1A110A', color: '#ffffff80'}}>Select Your Specialization</option>
+                      <option value="all-rounder" style={{background: '#1A110A', color: '#fff'}}>🛠️ All-Rounder (Multi-talented)</option>
                       <option value="plumber" style={{background: '#1A110A', color: '#fff'}}>🪠 Plumbing</option>
                       <option value="electrician" style={{background: '#1A110A', color: '#fff'}}>⚡ Electrician</option>
-                      <option value="cleaning" style={{background: '#1A110A', color: '#fff'}}>🧹 Cleaning</option>
                       <option value="ac-repair" style={{background: '#1A110A', color: '#fff'}}>❄️ AC Repair</option>
                       <option value="carpenter" style={{background: '#1A110A', color: '#fff'}}>🪚 Carpenter</option>
                       <option value="painter" style={{background: '#1A110A', color: '#fff'}}>🎨 Painter</option>
+                      <option value="cleaning" style={{background: '#1A110A', color: '#fff'}}>🧹 Cleaning</option>
                       <option value="pest-control" style={{background: '#1A110A', color: '#fff'}}>🐜 Pest Control</option>
-                      <option value="legal" style={{background: '#1A110A', color: '#fff'}}>⚖️ Legal</option>
+                      <option value="home-inspector" style={{background: '#1A110A', color: '#fff'}}>🔍 Home Inspector</option>
+                      <option value="legal" style={{background: '#1A110A', color: '#fff'}}>⚖️ Legal Specialist</option>
                     </select>
                   </div>
 

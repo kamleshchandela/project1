@@ -29,7 +29,8 @@ const Navbar: React.FC = () => {
     { name: '3D Tours', path: '/virtual-tours' },
     { name: 'Services', path: '/services' },
     { name: 'Sell Home', path: '/sell-home' },
-    { name: 'Schemes', path: '/schemes' }
+    { name: 'Schemes', path: '/schemes' },
+    { name: 'Loans', path: '/loan-optimizer' }
   ];
 
   if (isAuthenticated) {

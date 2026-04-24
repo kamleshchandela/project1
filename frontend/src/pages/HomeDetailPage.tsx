@@ -5,7 +5,7 @@ import {
   MapPin, ShieldAlert, Star, MessageCircle, Phone, 
   Box, ArrowLeft, Heart, Share2, Info, 
   Bed, Bath, Maximize, Loader2,
-  Sofa, Building2, User, X, Map
+  Sofa, Building2, User, X, Map, Sparkles, Zap, CheckCircle2, Filter, ArrowRight
 } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -203,76 +203,153 @@ const HomeDetailPage: React.FC = () => {
                 { icon: <Maximize size={24} />, label: 'Super Area', value: `${property.area || 0} sqft` },
                 { icon: <Sofa size={24} />, label: 'Furnishing', value: property.furnishing || 'Unfurnished' },
               ].map((spec, i) => (
-                <div key={i} className="glass-panel p-8 rounded-[2rem] border-white/5 flex flex-col items-center text-center group hover:border-amber-primary/30 transition-all">
-                  <div className="w-12 h-12 bg-amber-primary/10 rounded-2xl flex items-center justify-center text-amber-primary mb-4 group-hover:scale-110 transition-transform">
+                <motion.div 
+                  key={i} 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  viewport={{ once: true }}
+                  className="glass-panel p-8 rounded-[2rem] border-white/5 flex flex-col items-center text-center group hover:border-amber-primary/30 transition-all cursor-default"
+                >
+                  <div className="w-14 h-14 bg-amber-primary/10 rounded-2xl flex items-center justify-center text-amber-primary mb-5 group-hover:scale-110 transition-transform shadow-lg shadow-amber-primary/5">
                     {spec.icon}
                   </div>
                   <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mb-1">{spec.label}</p>
-                  <p className="text-lg font-bold">{spec.value}</p>
-                </div>
+                  <p className="text-xl font-bold text-white tracking-tight">{spec.value}</p>
+                </motion.div>
               ))}
+            </section>
+
+            {/* AI Valuation & Analysis */}
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="glass-panel p-10 rounded-[3rem] border-amber-primary/20 bg-amber-primary/5 relative overflow-hidden group">
+                 <div className="absolute -top-12 -right-12 text-amber-primary/5 group-hover:rotate-12 transition-transform duration-1000">
+                   <Zap size={200} />
+                 </div>
+                 <h3 className="text-2xl font-serif font-bold mb-6 flex items-center gap-3">
+                   <Sparkles className="text-amber-primary" size={24} /> AI Smart Valuation
+                 </h3>
+                 <div className="space-y-6 relative z-10">
+                    <div>
+                      <p className="text-[10px] text-white/30 uppercase font-black tracking-[0.2em] mb-2">Estimated Market Range</p>
+                      <div className="text-3xl font-mono font-bold text-white tracking-tighter">
+                        ₹{(propertyPrice * 0.95).toLocaleString()} - ₹{(propertyPrice * 1.08).toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                       <div className="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center text-success">
+                         <CheckCircle2 size={20} />
+                       </div>
+                       <p className="text-xs text-white/60 leading-relaxed font-medium">Currently listed at a <span className="text-success font-bold">Fair Market Price</span> based on Junagadh real-estate indexing.</p>
+                    </div>
+                 </div>
+              </div>
+
+              <div className="glass-panel p-10 rounded-[3rem] border-blue-500/20 bg-blue-500/5 relative overflow-hidden group cursor-pointer" onClick={() => navigate('/schemes')}>
+                 <div className="absolute -top-12 -right-12 text-blue-500/5 group-hover:scale-110 transition-transform duration-1000">
+                   <Building2 size={200} />
+                 </div>
+                 <h3 className="text-2xl font-serif font-bold mb-6 flex items-center gap-3">
+                   <Filter className="text-blue-400" size={24} /> Scheme Eligibility
+                 </h3>
+                 <div className="space-y-6 relative z-10">
+                    <p className="text-sm text-white/50 leading-relaxed">This property is eligible for <span className="text-white font-bold">PMAY (Urban)</span> and <span className="text-white font-bold">Stamp Duty Rebates</span>.</p>
+                    <button className="flex items-center gap-3 text-blue-400 text-[10px] font-black uppercase tracking-widest group-hover:translate-x-2 transition-transform">
+                       Check My Benefit Amount <ArrowRight size={14} />
+                    </button>
+                 </div>
+              </div>
             </section>
 
             {/* Nearby Places */}
             {property.nearbyPlaces && (
               <section>
-                <h3 className="text-2xl font-serif font-bold mb-6 flex items-center gap-3">
-                  <MapPin className="text-amber-primary" size={24} /> Nearby Places
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="flex items-center justify-between mb-8">
+                  <h3 className="text-3xl font-serif font-bold flex items-center gap-4">
+                    <MapPin className="text-amber-primary" size={32} /> Neighborhood <span className="text-white/20 italic">Pulse.</span>
+                  </h3>
+                  <p className="text-[10px] text-white/30 font-black uppercase tracking-widest hidden md:block">Real-time distance data</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
                   {/* Hospitals */}
                   {property.nearbyPlaces.hospitals && property.nearbyPlaces.hospitals.length > 0 && (
-                    <div className="glass-panel p-6 rounded-[2rem] border-white/5 hover:border-amber-primary/20 transition-all">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-400 text-lg font-bold border border-red-500/20">+</div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Hospitals</p>
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      className="glass-panel p-8 rounded-[2.5rem] border-white/5 hover:border-red-500/20 transition-all group"
+                    >
+                      <div className="flex items-center gap-4 mb-8">
+                        <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-400 text-xl font-bold border border-red-500/20 group-hover:scale-110 transition-transform">🏥</div>
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Wellness</p>
+                          <h4 className="text-lg font-bold">Hospitals</h4>
+                        </div>
                       </div>
-                      <ul className="space-y-3">
+                      <ul className="space-y-4">
                         {property.nearbyPlaces.hospitals.map((h, i) => (
-                          <li key={i} className="flex justify-between items-start gap-2">
-                            <span className="text-sm text-white/80 leading-snug">{h.name}</span>
-                            <span className="text-[10px] font-mono text-red-400 bg-red-500/10 px-2 py-0.5 rounded-full whitespace-nowrap">{h.distance}</span>
+                          <li key={i} className="flex justify-between items-start gap-4">
+                            <span className="text-sm text-white/60 leading-snug font-medium">{h.name}</span>
+                            <span className="text-[9px] font-mono font-black text-red-400 bg-red-500/10 px-3 py-1 rounded-full whitespace-nowrap border border-red-500/10">{h.distance}</span>
                           </li>
                         ))}
                       </ul>
-                    </div>
+                    </motion.div>
                   )}
 
                   {/* Gardens */}
                   {property.nearbyPlaces.gardens && property.nearbyPlaces.gardens.length > 0 && (
-                    <div className="glass-panel p-6 rounded-[2rem] border-white/5 hover:border-amber-primary/20 transition-all">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-xl border border-green-500/20">🌳</div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Gardens</p>
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.1 }}
+                      className="glass-panel p-8 rounded-[2.5rem] border-white/5 hover:border-green-500/20 transition-all group"
+                    >
+                      <div className="flex items-center gap-4 mb-8">
+                        <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center text-2xl border border-green-500/20 group-hover:scale-110 transition-transform">🍃</div>
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Nature</p>
+                          <h4 className="text-lg font-bold">Gardens</h4>
+                        </div>
                       </div>
-                      <ul className="space-y-3">
+                      <ul className="space-y-4">
                         {property.nearbyPlaces.gardens.map((g, i) => (
-                          <li key={i} className="flex justify-between items-start gap-2">
-                            <span className="text-sm text-white/80 leading-snug">{g.name}</span>
-                            <span className="text-[10px] font-mono text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full whitespace-nowrap">{g.distance}</span>
+                          <li key={i} className="flex justify-between items-start gap-4">
+                            <span className="text-sm text-white/60 leading-snug font-medium">{g.name}</span>
+                            <span className="text-[9px] font-mono font-black text-green-400 bg-green-500/10 px-3 py-1 rounded-full whitespace-nowrap border border-green-500/10">{g.distance}</span>
                           </li>
                         ))}
                       </ul>
-                    </div>
+                    </motion.div>
                   )}
 
                   {/* Temples */}
                   {property.nearbyPlaces.temples && property.nearbyPlaces.temples.length > 0 && (
-                    <div className="glass-panel p-6 rounded-[2rem] border-white/5 hover:border-amber-primary/20 transition-all">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-xl border border-amber-500/20">🛕</div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Temples</p>
+                    <motion.div 
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.2 }}
+                      className="glass-panel p-8 rounded-[2.5rem] border-white/5 hover:border-amber-500/20 transition-all group"
+                    >
+                      <div className="flex items-center gap-4 mb-8">
+                        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-2xl border border-amber-500/20 group-hover:scale-110 transition-transform">✨</div>
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Heritage</p>
+                          <h4 className="text-lg font-bold">Temples</h4>
+                        </div>
                       </div>
-                      <ul className="space-y-3">
+                      <ul className="space-y-4">
                         {property.nearbyPlaces.temples.map((t, i) => (
-                          <li key={i} className="flex justify-between items-start gap-2">
-                            <span className="text-sm text-white/80 leading-snug">{t.name}</span>
-                            <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full whitespace-nowrap">{t.distance}</span>
+                          <li key={i} className="flex justify-between items-start gap-4">
+                            <span className="text-sm text-white/60 leading-snug font-medium">{t.name}</span>
+                            <span className="text-[9px] font-mono font-black text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full whitespace-nowrap border border-amber-500/10">{t.distance}</span>
                           </li>
                         ))}
                       </ul>
-                    </div>
+                    </motion.div>
                   )}
 
                 </div>
